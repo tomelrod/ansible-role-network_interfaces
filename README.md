@@ -11,6 +11,7 @@ machines. The role can be used to configure:
 - Ethernet interfaces
 - Bridge interfaces
 - Bonded interfaces
+- VLAN tagged interfaces
 - Network routes
 
 Requirements
@@ -33,6 +34,9 @@ them are as follows:
 
     # The list of bonded interfaces to be added to the system
     network_bond_interfaces: []
+
+    # The list of vlan interfaces to be added to the system
+    network_vlan_interfaces: []
 
 Note: The values for the list are listed in the examples below.
 
@@ -109,7 +113,24 @@ address obtained via DHCP.
               bond_miimon: 100
               bond_slaves: [eth1, eth2]
 
-5) All the above examples show how to configure a single host, The below
+5) Configure a VLAN interface with the vlan tag 2 for an ethernet interface
+
+    - hosts: myhost
+      roles:
+        - role: network
+          network_ether_interfaces:
+           - device: eth1
+             bootproto: static
+             address: 192.168.10.18
+             netmask: 255.255.255.0
+             gateway: 192.168.10.1
+          network_vlan_interfaces:
+	   - device: eth1.2
+	     bootproto: static
+	     address: 192.168.20.18
+	     netmask: 255.255.255.0
+
+6) All the above examples show how to configure a single host, The below
 example shows how to define your network configurations for all your machines.
 
 Assume your host inventory is as follows:
