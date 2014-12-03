@@ -81,7 +81,7 @@
 - name: Create the network configuration file for vlan devices
   template: src=ethernet_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
   with_items: network_vlan_interfaces
-  when: network_ether_vlan is defined
+  when: network_vlan_interfaces is defined
   register: vlan_result
 
 - name: Write configuration files for rhel route configuration with vlan
