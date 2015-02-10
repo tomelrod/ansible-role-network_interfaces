@@ -23,7 +23,7 @@ bond-slaves {{ item.bond_slaves|join(' ') }}
 {% endif %}
 
 {% if item.bootproto == 'dhcp' %}
-iface {{ item.device }}  inet dhcp
+iface {{ item.device }} inet dhcp
 {% if item.bond_mode is defined %}        
 bond-mode {{ item.bond_mode }}
 {% endif %}
@@ -38,7 +38,7 @@ bond-slaves {{ item.bond_slaves|join(' ') }}
 
 {% if item.route is defined %}
 {% for i in item.route %}
-up route add -net {{ i.network }}  netmask {{ i.netmask }} gw {{ i.gateway }} dev {{ item.device }}
+up route add -net {{ i.network }} netmask {{ i.netmask }} gw {{ i.gateway }} dev {{ item.device }}
 {% endfor %}
 {% endif %}
 
