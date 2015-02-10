@@ -28,6 +28,16 @@ bridge_stp {{ item.stp }}
 {% endif %}
 {% endif %}
 
+{% if item.bootproto == 'manual' %}
+iface {{ item.device }} inet manual
+{% if item.ports is defined %}
+bridge_ports {{ item.ports|join(' ') }}
+{% endif %}
+{% if item.stp is defined %}
+bridge_stp {{ item.stp }}
+{% endif %}
+{% endif %}
+
 {% if item.route is defined %}
 {% for i in item.route %}
 up route add -net {{ i.network }} netmask {{ i.netmask }} gw {{ i.gateway }} dev {{ item.device }}
