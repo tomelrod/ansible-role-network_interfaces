@@ -41,7 +41,7 @@
 
 - shell: ifdown {{ item.item.device }}; ifup {{ item.item.device }}
   with_items: ether_result.results
-  when: ether_result is defined and item.changed
+  when: ether_result is defined and 'results' in ether_result and item.changed
 
 - name: Create the network configuration file for bridge devices
   template: src=bridge_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
@@ -56,7 +56,7 @@
 
 - shell: ifdown {{ item.item.device }}; ifup {{ item.item.device }}
   with_items: bridge_result.results
-  when: bridge_result is defined and item.changed
+  when: bridge_result is defined and 'results' in bridge_result and item.changed
  
 - name: Create the network configuration file for port on the bridge devices
   template: src=bridge_port_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.1 }}
@@ -68,7 +68,7 @@
 
 - shell: ifdown {{ item.item.1 }}; ifup {{ item.item.1 }}
   with_items: bridge_port_result.results
-  when: bridge_port_result is defined and item.changed
+  when: bridge_port_result is defined and 'results' in bridge_port_result and item.changed
 
 - name: Create the network configuration file for bond devices
   template: src=bond_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
@@ -87,7 +87,7 @@
 
 - shell: ifdown {{ item.item.device }}; ifup {{ item.item.device }}
   with_items: bond_result.results
-  when: bond_result is defined and item.changed
+  when: bond_result is defined and 'results' in bond_result and item.changed
 
 - name: Create the network configuration file for slave in the bond devices
   template: src=bond_slave_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.1 }}
@@ -99,8 +99,8 @@
 
 - shell: ifdown {{ item.item.1 }}; ifup {{ item.item.1 }}
   with_items: bond_port_result.results
-  when: bond_port_result is defined and item.changed
+  when: bond_port_result is defined and 'results' in bond_port_result and item.changed
 
 - shell: ifdown {{ item.item.device }}; ifup {{ item.item.device }}
   with_items: bond_result.results
-  when: bond_result is defined and item.changed and ansible_os_family == 'RedHat'
+  when: bond_result is defined and 'results' in bond_result and item.changed and ansible_os_family == 'RedHat'
