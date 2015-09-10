@@ -14,6 +14,9 @@ NETMASK={{ item.netmask }}
 {% if item.gateway is defined %}
 GATEWAY={{ item.gateway }}
 {% endif %}
+{% if item.vlan is defined %}
+VLAN=yes
+{% endif %}
 {% endif %}
 
 {% if item.bootproto == 'dhcp' %}
