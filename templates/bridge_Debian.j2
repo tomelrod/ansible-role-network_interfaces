@@ -7,6 +7,11 @@ address {{ item.address }}
 {% if item.netmask is defined %}
 netmask {{ item.netmask }}
 {% endif %}
+{% if item.dns_nameservers is defined %}
+{% for dns_nameserver in item.dns_nameservers %}
+dns-nameservers {{ dns_nameserver }}
+{% endfor %}
+{% endif %}
 {% if item.gateway is defined %}
 gateway {{ item.gateway }}
 {% endif %}
