@@ -1,24 +1,32 @@
-{% if item.bootproto == 'static' %}
+
 auto {{ item.device }}
-iface {{ item.device }} inet static
+iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto }}{% elif item.cidr is defined or item.address is defined %}static{% else %}dhcp{% endif %}
+
+{% if item.cidr is defined %}
+    address   {{ item.cidr | ipaddr('address') }}
+    network   {{ item.cidr | ipaddr('network') }}
+    netmask   {{ item.cidr | ipaddr('netmask') }}
+    broadcast {{ item.cidr | ipaddr('broadcast') }}
+{% elif item.address is defined and item.netmask is defined %}
 {% if item.address is defined %}
-address {{ item.address }}
+    address   {{ item.address }}
 {% endif %}
 {% if item.netmask is defined %}
-netmask {{ item.netmask }}
+    netmask   {{ item.netmask }}
+{% endif %}
+{% if item.network is defined %}
+    network   {{ item.network }}
+{% endif %}
+{% if item.broadcast is defined %}
+    broadcast {{ item.broadcast }}
+{% endif %}
 {% endif %}
 {% if item.gateway is defined %}
-gateway {{ item.gateway }}
+    gateway   {{ item.gateway }}
 {% endif %}
-{% endif %}
-
-{% if item.bootproto == 'dhcp' %}
-auto {{ item.device }}
-iface {{ item.device }} inet dhcp
-{% endif %}
-
 {% if item.route is defined %}
 {% for i in item.route %}
-up route add -net {{ i.network }} netmask {{ i.netmask }} gw {{ i.gateway }} dev {{ item.device }}
+    up ip route add {{ i.network }}/{{ i.netmask }} via {{ i.gateway }} dev {{ item.device }}
 {% endfor %}
 {% endif %}
+

@@ -171,6 +171,17 @@ Describe your network configuration for each host in host vars:
              netmask: 255.255.255.0
              gateway: 192.168.10.1
 
+7) Its possible to use CIDR notation for IP Configuration
+
+    - hosts: myhost
+      roles:
+        - role: network
+          network_ether_interfaces:
+           - device: eth0
+             address: 192.168.10.18/24
+             gateway: 192.168.10.1
+
+
 Create a playbook which applies this role to all hosts as shown below, and run
 the playbook. All the servers should have their network interfaces configured
 and routed updated.
@@ -184,10 +195,11 @@ may need to have a control interface that you do *not* modify using this
 method so that Ansible has a stable connection to configure the target
 systems.
 
+
 Dependencies
 ------------
 
-None
+python-netaddr
 
 License
 -------
@@ -198,4 +210,7 @@ Author Information
 ------------------
 
 Benno Joy
+Improvements from other GIT Forks
+Debian Upgrades by Martin Verges
+
 
