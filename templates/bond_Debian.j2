@@ -23,6 +23,8 @@ iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto
 {% endif %}
 {% if item.gateway is defined %}
     gateway   {{ item.gateway }}
+{% elif item.cidr is defined %}
+    gateway   {{ item.cidr | ipaddr('1') | ipaddr('address') }}
 {% endif %}
 
 {% if item.bond_mode is defined and item.bond_slaves is defined %}
