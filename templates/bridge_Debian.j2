@@ -83,3 +83,13 @@ iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto
     bridge_waitport       {{ item.bridge_waitport }}
 {% endif %}
 
+{% if item.ipv6_address is defined %}
+iface {{ item.device }} inet6 static
+    address   {{ item.ipv6_address | ipaddr('address') }} 
+    netmask   {{ item.ipv6_address | ipaddr('prefix') }}
+{% if item.ipv6_gateway is defined %}
+    gateway   {{ item.ipv6_gateway }}
+{% else %}
+    gateway   {{ item.ipv6_address | ipaddr('1') | ipaddr('address') }}
+{% endif %}
+

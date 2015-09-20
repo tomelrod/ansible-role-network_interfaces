@@ -184,7 +184,7 @@ Describe your network configuration for each host in host vars:
              netmask: 255.255.255.0
              gateway: 192.168.10.1
 
-7) Its possible to use CIDR notation for IP configuration
+7) It is possible to use CIDR notation for IP configuration
 
     - hosts: myhost
       roles:
@@ -199,6 +199,12 @@ Describe your network configuration for each host in host vars:
       dns-nameserver: [ "8.8.8.8", "8.8.4.4" ]
       dns-search: "search.mydomain.tdl"
       dns-domain: "mydomain.tdl"
+
+9) You can add IPv6 static IP configuration on Ethernet, Bond, Bridge with
+
+      ipv6_address: "aaaa:bbbb:cccc:dddd:dead:beef::1/64"
+      ipv6_gateway: "aaaa:bbbb:cccc:dddd::1"
+
 
 Create a playbook which applies this role to all hosts as shown below, and run
 the playbook. All the servers should have their network interfaces configured
