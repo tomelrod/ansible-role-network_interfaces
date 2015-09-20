@@ -34,7 +34,10 @@ iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto
     bond-xmit-hash-policy  {{ item.bond_xmit_hash_policy | default('layer3+4') }}
 {% endif %}
 {% if item.bond_slaves is defined %}
-    bond-slaves {{ item.bond_slaves|join(' ') }}
+    bond-slaves             {{ item.bond_slaves|join(' ') }}
+{% endif %}
+{% if item.hwaddress is defined %}
+	hwaddress ether        {{ item.hwaddress }}
 {% endif %}
 {% endif %}
 
