@@ -3,7 +3,8 @@
 network_pkgs:
   - python-selinux
   - bridge-utils
-  - ifenslave-2.6
+  - ifenslave
   - vlan
+  - iproute2
 
 net_path: "/etc/network/interfaces.d"
