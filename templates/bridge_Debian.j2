@@ -3,33 +3,37 @@ auto {{ item.device }}
 iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto }}{% elif item.cidr is defined or item.address is defined %}static{% else %}dhcp{% endif %}
 
 {% if item.cidr is defined %}
-    address   {{ item.cidr | ipaddr('address') }}
-    network   {{ item.cidr | ipaddr('network') }}
-    netmask   {{ item.cidr | ipaddr('netmask') }}
-    broadcast {{ item.cidr | ipaddr('broadcast') }}
+    address                {{ item.cidr | ipaddr('address') }}
+    network                {{ item.cidr | ipaddr('network') }}
+    netmask                {{ item.cidr | ipaddr('netmask') }}
+    broadcast              {{ item.cidr | ipaddr('broadcast') }}
 {% elif item.address is defined and item.netmask is defined %}
 {% if item.address is defined %}
-    address   {{ item.address }}
+    address                {{ item.address }}
 {% endif %}
 {% if item.netmask is defined %}
-    netmask   {{ item.netmask }}
+    netmask                {{ item.netmask }}
 {% endif %}
 {% if item.network is defined %}
-    network   {{ item.network }}
+    network                {{ item.network }}
 {% endif %}
 {% if item.broadcast is defined %}
-    broadcast {{ item.broadcast }}
+    broadcast              {{ item.broadcast }}
 {% endif %}
 {% endif %}
 {% if item.gateway is defined %}
-    gateway   {{ item.gateway }}
+    gateway                {{ item.gateway }}
 {% elif item.cidr is defined %}
-    gateway   {{ item.cidr | ipaddr('1') | ipaddr('address') }}
+    gateway                {{ item.cidr | ipaddr('1') | ipaddr('address') }}
 {% endif %}
 {% if item.dns_nameservers is defined %}
-{% for dns_nameserver in item.dns_nameservers %}
-    dns-nameservers {{ dns_nameserver }}
-{% endfor %}
+    dns-nameservers        {{ item.dns_nameservers|join(' ') }}
+{% endif %}
+{% if item.dns_search is defined %}
+    dns-search             {{ item.dns-search }}
+{% endif %}
+{% if item.dns_domain is defined %}
+    dns-domain             {{ item.dns-domain }}
 {% endif %}
 {% if item.route is defined %}
 {% for i in item.route %}
@@ -38,44 +42,44 @@ iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto
 {% endif %}
 
 {% if item.bridge_ports is defined %}        
-    bridge_ports        {{ item.bridge_ports|join(' ') }}
+    bridge_ports           {{ item.bridge_ports|join(' ') }}
 {% else %}
-    bridge_ports        none 
+    bridge_ports           none 
 {% endif %}
 {% if item.bridge_ageing is defined %}        
-    bridge_ageing   {{ item.bridge_ageing }}
+    bridge_ageing          {{ item.bridge_ageing }}
 {% endif %}
 {% if item.bridge_bridgeprio is defined %}        
-    bridge_bridgeprio   {{ item.bridge_bridgeprio }}
+    bridge_bridgeprio      {{ item.bridge_bridgeprio }}
 {% endif %}
 {% if item.bridge_fd is defined %}        
-    bridge_fd           {{ item.bridge_fd }}
+    bridge_fd              {{ item.bridge_fd }}
 {% endif %}
 {% if item.bridge_gcint is defined %}        
-    bridge_gcint        {{ item.bridge_gcint }}
+    bridge_gcint           {{ item.bridge_gcint }}
 {% endif %}
 {% if item.bridge_hello is defined %}        
-    bridge_hello        {{ item.bridge_hello }}
+    bridge_hello           {{ item.bridge_hello }}
 {% endif %}
 {% if item.hwaddress is defined %}
-    bridge_hw           {{ item.hwaddress }}
+    bridge_hw              {{ item.hwaddress }}
 {% endif %}
 {% if item.bridge_maxage is defined %}        
-    bridge_maxage       {{ item.bridge_maxage }}
+    bridge_maxage          {{ item.bridge_maxage }}
 {% endif %}
 {% if item.bridge_maxwait is defined %}        
-    bridge_maxwait      {{ item.bridge_maxwait }}
+    bridge_maxwait         {{ item.bridge_maxwait }}
 {% endif %}
 {% if item.bridge_pathcost is defined %}        
-    bridge_pathcost     {{ item.bridge_pathcost }}
+    bridge_pathcost        {{ item.bridge_pathcost }}
 {% endif %}
 {% if item.bridge_portprio is defined %}        
-    bridge_portprio     {{ item.bridge_portprio }}
+    bridge_portprio        {{ item.bridge_portprio }}
 {% endif %}
 {% if item.bridge_stp is defined %}        
-    bridge_stp          {{ item.bridge_stp }}
+    bridge_stp             {{ item.bridge_stp }}
 {% endif %}
 {% if item.bridge_waitport is defined %}        
-    bridge_waitport     {{ item.bridge_waitport }}
+    bridge_waitport       {{ item.bridge_waitport }}
 {% endif %}
 

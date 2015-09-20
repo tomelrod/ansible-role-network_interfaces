@@ -184,7 +184,7 @@ Describe your network configuration for each host in host vars:
              netmask: 255.255.255.0
              gateway: 192.168.10.1
 
-7) Its possible to use CIDR notation for IP Configuration
+7) Its possible to use CIDR notation for IP configuration
 
     - hosts: myhost
       roles:
@@ -194,6 +194,11 @@ Describe your network configuration for each host in host vars:
              address: 192.168.10.18/24
              gateway: 192.168.10.1
 
+8) If resolvconf package should be used, it is possible to add some DNS configurations
+
+      dns-nameserver: [ "8.8.8.8", "8.8.4.4" ]
+      dns-search: "search.mydomain.tdl"
+      dns-domain: "mydomain.tdl"
 
 Create a playbook which applies this role to all hosts as shown below, and run
 the playbook. All the servers should have their network interfaces configured

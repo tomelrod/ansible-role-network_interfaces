@@ -36,11 +36,19 @@ iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto
 {% if item.bond_slaves is defined %}
     bond-slaves             {{ item.bond_slaves|join(' ') }}
 {% endif %}
+{% endif %}
 {% if item.hwaddress is defined %}
 	hwaddress ether        {{ item.hwaddress }}
 {% endif %}
+{% if item.dns_nameservers is defined %}
+    dns-nameservers        {{ item.dns_nameservers|join(' ') }}
 {% endif %}
-
+{% if item.dns_search is defined %}
+    dns-search             {{ item.dns-search }}
+{% endif %}
+{% if item.dns_domain is defined %}
+    dns-domain             {{ item.dns-domain }}
+{% endif %}
 {% if item.route is defined %}
 {% for i in item.route %}
     up ip route add {{ i.network }}/{{ i.netmask }} via {{ i.gateway }} dev {{ item.device }}
