@@ -55,6 +55,7 @@ define static routes and a gateway.
              address: 192.168.10.18
              netmask: 255.255.255.0
              gateway: 192.168.10.1
+              hwaddress: aa:bb:cc:dd:ee:ff
              route:
               - network: 192.168.200.0
                 netmask: 255.255.255.0
@@ -75,9 +76,20 @@ define static routes and a gateway.
               type: bridge
               address: 192.168.10.10
               netmask: 255.255.255.0
+              hwaddress: aa:bb:cc:dd:ee:ff
               bootproto: static
-              stp: "on"
-              ports: [eth1, eth2]
+              bridge_ports: [eth1, eth2]
+              bridge_ageing: 300 
+              bridge_bridgeprio: 32768
+              bridge_fd: 15
+              bridge_gcint: 4
+              bridge_hello: 2
+              bridge_maxage: 20
+              bridge_maxwait: 0
+              bridge_pathcost: "eth1 100"
+              bridge_portprio: "eth1 128"
+              bridge_stp: "on"
+              bridge_waitport: "5 eth1 eth2"
 
 Note: Routes can also be added for this interface in the same way routes are
 added for ethernet interfaces.
@@ -91,6 +103,7 @@ added for ethernet interfaces.
             - device: bond0
               address: 192.168.10.128
               netmask: 255.255.255.0
+              hwaddress: aa:bb:cc:dd:ee:ff
               bootproto: static
               bond_mode: active-backup
               bond_miimon: 100
@@ -209,8 +222,9 @@ BSD
 Author Information
 ------------------
 
-Benno Joy
-Improvements from other GIT Forks
-Debian Upgrades by Martin Verges
+based on role from Benno Joy
 
+Improvements from some other GIT Forks
+
+Debian Upgrades by Martin Verges, First Colo GmbH
 

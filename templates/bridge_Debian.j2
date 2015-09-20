@@ -1,51 +1,81 @@
+
 auto {{ item.device }}
-{% if item.bootproto == 'static' %}
-iface {{ item.device }} inet static
+iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto }}{% elif item.cidr is defined or item.address is defined %}static{% else %}dhcp{% endif %}
+
+{% if item.cidr is defined %}
+    address   {{ item.cidr | ipaddr('address') }}
+    network   {{ item.cidr | ipaddr('network') }}
+    netmask   {{ item.cidr | ipaddr('netmask') }}
+    broadcast {{ item.cidr | ipaddr('broadcast') }}
+{% elif item.address is defined and item.netmask is defined %}
 {% if item.address is defined %}
-address {{ item.address }}
+    address   {{ item.address }}
 {% endif %}
 {% if item.netmask is defined %}
-netmask {{ item.netmask }}
+    netmask   {{ item.netmask }}
+{% endif %}
+{% if item.network is defined %}
+    network   {{ item.network }}
+{% endif %}
+{% if item.broadcast is defined %}
+    broadcast {{ item.broadcast }}
+{% endif %}
+{% endif %}
+{% if item.gateway is defined %}
+    gateway   {{ item.gateway }}
+{% elif item.cidr is defined %}
+    gateway   {{ item.cidr | ipaddr('1') | ipaddr('address') }}
 {% endif %}
 {% if item.dns_nameservers is defined %}
 {% for dns_nameserver in item.dns_nameservers %}
-dns-nameservers {{ dns_nameserver }}
+    dns-nameservers {{ dns_nameserver }}
 {% endfor %}
 {% endif %}
-{% if item.gateway is defined %}
-gateway {{ item.gateway }}
-{% endif %}
-{% if item.ports is defined %}        
-bridge_ports {{ item.ports|join(' ') }}
-{% endif %}
-{% if item.stp is defined %}        
-bridge_stp {{ item.stp }}
-{% endif %}
-{% endif %}
-
-{% if item.bootproto == 'dhcp' %}
-iface {{ item.device }} inet dhcp
-{% if item.ports is defined %}        
-bridge_ports {{ item.port }}
-{% endif %}
-{% if item.stp is defined %}
-bridge_stp {{ item.stp }}
-{% endif %}
-{% endif %}
-
-{% if item.bootproto == 'manual' %}
-iface {{ item.device }} inet manual
-{% if item.ports is defined %}
-bridge_ports {{ item.ports|join(' ') }}
-{% endif %}
-{% if item.stp is defined %}
-bridge_stp {{ item.stp }}
-{% endif %}
-{% endif %}
-
 {% if item.route is defined %}
 {% for i in item.route %}
-up route add -net {{ i.network }} netmask {{ i.netmask }} gw {{ i.gateway }} dev {{ item.device }}
+    up ip route add {{ i.network }}/{{ i.netmask }} via {{ i.gateway }} dev {{ item.device }}
 {% endfor %}
+{% endif %}
+
+{% if item.bridge_ports is defined %}        
+    bridge_ports        {{ item.bridge_ports|join(' ') }}
+{% else %}
+    bridge_ports        none 
+{% endif %}
+{% if item.bridge_ageing is defined %}        
+    bridge_ageing   {{ item.bridge_ageing }}
+{% endif %}
+{% if item.bridge_bridgeprio is defined %}        
+    bridge_bridgeprio   {{ item.bridge_bridgeprio }}
+{% endif %}
+{% if item.bridge_fd is defined %}        
+    bridge_fd           {{ item.bridge_fd }}
+{% endif %}
+{% if item.bridge_gcint is defined %}        
+    bridge_gcint        {{ item.bridge_gcint }}
+{% endif %}
+{% if item.bridge_hello is defined %}        
+    bridge_hello        {{ item.bridge_hello }}
+{% endif %}
+{% if item.hwaddress is defined %}
+    bridge_hw           {{ item.hwaddress }}
+{% endif %}
+{% if item.bridge_maxage is defined %}        
+    bridge_maxage       {{ item.bridge_maxage }}
+{% endif %}
+{% if item.bridge_maxwait is defined %}        
+    bridge_maxwait      {{ item.bridge_maxwait }}
+{% endif %}
+{% if item.bridge_pathcost is defined %}        
+    bridge_pathcost     {{ item.bridge_pathcost }}
+{% endif %}
+{% if item.bridge_portprio is defined %}        
+    bridge_portprio     {{ item.bridge_portprio }}
+{% endif %}
+{% if item.bridge_stp is defined %}        
+    bridge_stp          {{ item.bridge_stp }}
+{% endif %}
+{% if item.bridge_waitport is defined %}        
+    bridge_waitport     {{ item.bridge_waitport }}
 {% endif %}
 
