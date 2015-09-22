@@ -43,6 +43,28 @@ Note: The values for the list are listed in the examples below.
 Examples
 --------
 
+For all network configurations, it is possible to use CIDR or IPv4 Address notation. 
+I recomend the use of CIDR, because it helps to get a simpler configuration and it
+is the only way for IPv6 Addresses.
+
+IPv4 Example with CIDR notation:
+
+      cidr: 192.168.10.18/24
+      # OPTIONAL: specify a gateway for that network, or auto for network+1
+      gateway: auto 
+ 
+IPv4 Example with classic IPv4:
+
+      address: 192.168.10.18
+      netmask: 255.255.255.0
+      network: 192.168.10.0
+      broadcast: 192.168.10.255
+      gateway: 192.168.10.1
+
+If you want to use a different MAC Address for your Interface, you can simply add it.
+
+      hwaddress: aa:bb:cc:dd:ee:ff
+
 1) Configure eth1 and eth2 on a host with a static IP and a dhcp IP. Also
 define static routes and a gateway.
 
@@ -52,10 +74,8 @@ define static routes and a gateway.
           network_ether_interfaces:
            - device: eth1
              bootproto: static
-             address: 192.168.10.18
-             netmask: 255.255.255.0
-             gateway: 192.168.10.1
-              hwaddress: aa:bb:cc:dd:ee:ff
+             cidr: 192.168.10.18/24
+             gateway: auto 
              route:
               - network: 192.168.200.0
                 netmask: 255.255.255.0
@@ -66,7 +86,9 @@ define static routes and a gateway.
            - device: eth2
              bootproto: dhcp
 
-2) Configure a bridge interface with multiple NIcs added to the bridge.
+Note: it is not required to add routes, default route will be added automatically.
+
+2) Configure a bridge interface with multiple NIcs added to the bridge. 
 
     - hosts: myhost
       roles:
@@ -74,11 +96,10 @@ define static routes and a gateway.
           network_bridge_interfaces:
            -  device: br1
               type: bridge
-              address: 192.168.10.10
-              netmask: 255.255.255.0
-              hwaddress: aa:bb:cc:dd:ee:ff
-              bootproto: static
+              cidr: 192.168.10.10/24
               bridge_ports: [eth1, eth2]
+
+              # Optional values
               bridge_ageing: 300 
               bridge_bridgeprio: 32768
               bridge_fd: 15
@@ -103,15 +124,13 @@ added for ethernet interfaces.
             - device: bond0
               address: 192.168.10.128
               netmask: 255.255.255.0
-              hwaddress: aa:bb:cc:dd:ee:ff
-              bootproto: static
               bond_mode: active-backup
-              bond_miimon: 100
               bond_slaves: [eth1, eth2]
-              route:
-              - network: 192.168.222.0
-                netmask: 255.255.255.0
-                gateway: 192.168.10.1
+
+              # Optional values
+              bond_miimon: 100
+              bond_lacp_rate: slow
+              bond_xmit_hash_policy: layer3+4
 
 4) Configure a bonded interface with "802.3ad" as the bonding mode and IP
 address obtained via DHCP.
@@ -134,14 +153,12 @@ address obtained via DHCP.
           network_ether_interfaces:
            - device: eth1
              bootproto: static
-             address: 192.168.10.18
-             netmask: 255.255.255.0
-             gateway: 192.168.10.1
+             cidr: 192.168.10.18/24
+             gateway: auto
           network_vlan_interfaces:
-	   - device: eth1.2
-	     bootproto: static
-	     address: 192.168.20.18
-	     netmask: 255.255.255.0
+           - device: eth1.2
+             bootproto: static
+             cidr: 192.168.20.18/24
 
 6) All the above examples show how to configure a single host, The below
 example shows how to define your network configurations for all your machines.
@@ -184,23 +201,13 @@ Describe your network configuration for each host in host vars:
              netmask: 255.255.255.0
              gateway: 192.168.10.1
 
-7) It is possible to use CIDR notation for IP configuration
-
-    - hosts: myhost
-      roles:
-        - role: network
-          network_ether_interfaces:
-           - device: eth0
-             address: 192.168.10.18/24
-             gateway: 192.168.10.1
-
-8) If resolvconf package should be used, it is possible to add some DNS configurations
+7) If resolvconf package should be used, it is possible to add some DNS configurations
 
       dns-nameserver: [ "8.8.8.8", "8.8.4.4" ]
       dns-search: "search.mydomain.tdl"
       dns-domain: "mydomain.tdl"
 
-9) You can add IPv6 static IP configuration on Ethernet, Bond, Bridge with
+8) You can add IPv6 static IP configuration on Ethernet, Bond or Bridge interfaces
 
       ipv6_address: "aaaa:bbbb:cccc:dddd:dead:beef::1/64"
       ipv6_gateway: "aaaa:bbbb:cccc:dddd::1"
@@ -216,8 +223,9 @@ and routed updated.
 
 Note: Ansible needs network connectivity throughout the playbook process, you
 may need to have a control interface that you do *not* modify using this
-method so that Ansible has a stable connection to configure the target
-systems.
+method while changeing IP Addresses so that Ansible has a stable connection 
+to configure the target systems. All network changes are done within a single 
+generated script and network connectivity is only lost for few seconds.
 
 
 Dependencies

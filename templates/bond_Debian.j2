@@ -2,30 +2,9 @@
 auto {{ item.device }}
 iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto }}{% elif item.cidr is defined or item.address is defined %}static{% else %}dhcp{% endif %}
 
-{% if item.cidr is defined %}
-    address   {{ item.cidr | ipaddr('address') }}
-    network   {{ item.cidr | ipaddr('network') }}
-    netmask   {{ item.cidr | ipaddr('netmask') }}
-    broadcast {{ item.cidr | ipaddr('broadcast') }}
-{% elif item.address is defined and item.netmask is defined %}
-{% if item.address is defined %}
-    address   {{ item.address }}
-{% endif %}
-{% if item.netmask is defined %}
-    netmask   {{ item.netmask }}
-{% endif %}
-{% if item.network is defined %}
-    network   {{ item.network }}
-{% endif %}
-{% if item.broadcast is defined %}
-    broadcast {{ item.broadcast }}
-{% endif %}
-{% endif %}
-{% if item.gateway is defined %}
-    gateway   {{ item.gateway }}
-{% elif item.cidr is defined %}
-    gateway   {{ item.cidr | ipaddr('1') | ipaddr('address') }}
-{% endif %}
+{% include 'Debian_ipv4_config.j2' %}
+{% include 'Debian_resolvconf.j2' %}
+
 {% if item.bond_mode is defined and item.bond_slaves is defined %}
 {% if item.bond_mode is defined %}
     bond-mode              {{ item.bond_mode }}
@@ -37,18 +16,11 @@ iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto
     bond-slaves             {{ item.bond_slaves|join(' ') }}
 {% endif %}
 {% endif %}
+
 {% if item.hwaddress is defined %}
 	hwaddress ether        {{ item.hwaddress }}
 {% endif %}
-{% if item.dns_nameservers is defined %}
-    dns-nameservers        {{ item.dns_nameservers|join(' ') }}
-{% endif %}
-{% if item.dns_search is defined %}
-    dns-search             {{ item.dns-search }}
-{% endif %}
-{% if item.dns_domain is defined %}
-    dns-domain             {{ item.dns-domain }}
-{% endif %}
+
 {% if item.route is defined %}
 {% for i in item.route %}
     up ip route add {{ i.network }}/{{ i.netmask }} via {{ i.gateway }} dev {{ item.device }}
@@ -63,5 +35,6 @@ iface {{ item.device }} inet6 static
     gateway   {{ item.ipv6_gateway }}
 {% else %}
     gateway   {{ item.ipv6_address | ipaddr('1') | ipaddr('address') }}
+{% endif %}
 {% endif %}
 
