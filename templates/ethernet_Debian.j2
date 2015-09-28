@@ -9,6 +9,12 @@ iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto
     hwaddress ether        {{ item.hwaddress }}
 {% endif %}
 
+{% if item.options is defined %}
+{% for option in item.options %}
+    {{ option }}
+{% endfor %}
+{% endif %}
+
 {% if item.route is defined %}
 {% for i in item.route %}
     up ip route add {{ i.network }}/{{ i.netmask }} via {{ i.gateway }} dev {{ item.device }}
@@ -23,6 +29,11 @@ iface {{ item.device }} inet6 static
     gateway   {{ item.ipv6_gateway }}
 {% else %}
     gateway   {{ item.ipv6_address | ipaddr('1') | ipaddr('address') }}
+{% endif %}
+{% if item.ipv6_options is defined %}
+{% for option in item.ipv6_options %}
+    {{ option }}
+{% endfor %}
 {% endif %}
 {% endif %}
 

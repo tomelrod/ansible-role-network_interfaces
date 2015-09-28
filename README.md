@@ -65,6 +65,20 @@ If you want to use a different MAC Address for your Interface, you can simply ad
 
       hwaddress: aa:bb:cc:dd:ee:ff
 
+On some rare occasion it might be good to set whatever option you like. Therefore it 
+is possible to use
+
+      options:
+          - "up /execute/my/command"
+          - "down /execute/my/other/command"
+
+and the IPv6 version 
+
+      ipv6_options:
+          - "up /execute/my/command"
+          - "down /execute/my/other/command"
+
+
 1) Configure eth1 and eth2 on a host with a static IP and a dhcp IP. Also
 define static routes and a gateway.
 

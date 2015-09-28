@@ -53,6 +53,12 @@ iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto
     bridge_waitport       {{ item.bridge_waitport }}
 {% endif %}
 
+{% if item.options is defined %}
+{% for option in item.options %}
+    {{ option }}
+{% endfor %}
+{% endif %}
+
 {% if item.ipv6_address is defined %}
 iface {{ item.device }} inet6 static
     address   {{ item.ipv6_address | ipaddr('address') }} 
@@ -61,6 +67,11 @@ iface {{ item.device }} inet6 static
     gateway   {{ item.ipv6_gateway }}
 {% else %}
     gateway   {{ item.ipv6_address | ipaddr('1') | ipaddr('address') }}
+{% endif %}
+{% if item.ipv6_options is defined %}
+{% for option in item.ipv6_options %}
+    {{ option }}
+{% endfor %}
 {% endif %}
 {% endif %}
 
