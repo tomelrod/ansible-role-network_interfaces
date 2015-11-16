@@ -17,6 +17,11 @@ GATEWAY={{ item.gateway }}
 {% endif %}
 BONDING_OPTS="mode={{ item.bond_mode }} miimon={{ item.bond_miimon|default(100) }} "
 {% endif %}
+{% if item.dns_nameservers is defined %}
+{% for dns_nameserver in item.dns_nameservers %}
+DNS{{ loop.index }}={{ dns_nameserver }}
+{% endfor %}
+{% endif %}
 
 {% if item.bootproto == 'dhcp' %}
 DEVICE={{ item.device }}
