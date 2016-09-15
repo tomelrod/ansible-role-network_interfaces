@@ -1,5 +1,5 @@
 
-{% if item.bootproto == 'static' %}
+{% if item.bootproto != 'dhcp' %}
 DEVICE={{ item.device }}
 USERCTL=no
 BOOTPROTO=none
@@ -15,7 +15,7 @@ NETMASK={{ item.netmask }}
 {% if item.gateway is defined %}
 GATEWAY={{ item.gateway }}
 {% endif %}
-BONDING_OPTS="mode={{ item.bond_mode }} miimon={{ item.bond_miimon|default(100) }} "
+BONDING_OPTS="mode={{ item.bond_mode }} miimon={{ item.bond_miimon|default(100) }} {{ item.bond_extra_opts|default('') }}"
 {% endif %}
 {% if item.dns_nameservers is defined %}
 {% for dns_nameserver in item.dns_nameservers %}
@@ -25,8 +25,29 @@ DNS{{ loop.index }}={{ dns_nameserver }}
 
 {% if item.bootproto == 'dhcp' %}
 DEVICE={{ item.device }}
-BONDING_OPTS="mode={{ item.bond_mode }} miimon={{ item.bond_miimon|default(100) }} "
+BONDING_OPTS="mode={{ item.bond_mode }} miimon={{ item.bond_miimon|default(100) }} {{ item.bond_extra_opts|default('') }}"
 USERCTL=no
 ONBOOT={{ item.onboot|default("yes") }}
 BOOTPROTO=dhcp
 {% endif %}
+
+{% if item.nm_controlled is defined %}
+NM_CONTROLLED={{ item.nm_controlled }}
+{% endif %}
+
+{% if item.defroute is defined %}
+DEFROUTE={{ item.defroute }}
+{% endif %}
+
+{% if item.mtu is defined %}
+MTU={{ item.mtu }}
+{% endif %}
+
+{% if item.bonding_master is defined %}
+BONDING_MASTER={{ item.bonding_master }}
+{% endif %}
+
+{% if item.bridge is defined %}
+BRIDGE={{ item.bridge }}
+{% endif %}
+

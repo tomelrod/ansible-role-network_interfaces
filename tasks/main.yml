@@ -1,51 +1,32 @@
+
 ---
 
 - name: Add the OS specific varibles
   include_vars: "{{ ansible_os_family }}.yml"
 
-- name: Install the required  packages in Redhat derivatives
-  yum: name={{ item }} state=installed
-  with_items: network_pkgs
-  when: ansible_os_family == 'RedHat'
+# RedHat specific stuff
+- include: redhat.yml
+# Debian/Ubuntu specific stuff
+- include: debian.yml
 
-- name: Install the required packages in Debian derivatives
-  apt: name={{ item }} state=installed
-  with_items: network_pkgs
-  environment: env
-  when: ansible_os_family == 'Debian'
-
-- name: Make sure the include line is there in interfaces file
-  lineinfile: >
-     regexp="^source\ \/etc\/network\/interfaces.d\/\*"
-     line="source /etc/network/interfaces.d/*"
-     dest=/etc/network/interfaces
-     state=present
-     insertafter=EOF
-  when: ansible_os_family == "Debian"
-
-- name: Create the directory for interface cfg files
-  file: path=/etc/network/interfaces.d  state=directory
-  when: ansible_os_family == "Debian"
-
-
-# First of all, create all configuration files
+# Create configuration files in the net_path for ethernet, vlan, bond and bridge interfaces
 - name: Create the network configuration file for ethernet devices
   template: src=ethernet_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
-  with_items: network_ether_interfaces
+  with_items: "{{ network_ether_interfaces }}"
   when: network_ether_interfaces is defined
   register: ether_result
 
 - name: Create the network configuration file for slave in the bond devices
   template: src=bond_slave_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.1 }}
-  with_subelements: 
-   - network_bond_interfaces
+  with_subelements:
+   - "{{ network_bond_interfaces }}"
    - bond_slaves
   when: network_bond_interfaces is defined
   register: bond_port_result
 
 - name: Create the network configuration file for bond devices
   template: src=bond_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
-  with_items: network_bond_interfaces
+  with_items: "{{ network_bond_interfaces }}"
   when: network_bond_interfaces is defined
   register: bond_result
 
@@ -55,121 +36,31 @@
 
 - name: Create the network configuration file for vlan devices
   template: src=ethernet_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
-  with_items: network_vlan_interfaces
+  with_items: "{{ network_vlan_interfaces }}"
   when: network_vlan_interfaces is defined
   register: vlan_result
 
 - name: Create the network configuration file for bridge devices
   template: src=bridge_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
-  with_items: network_bridge_interfaces
-  when: network_bridge_interfaces is defined 
+  with_items: "{{ network_bridge_interfaces }}"
+  when: network_bridge_interfaces is defined
   register: bridge_result
 
 - name: Create the network configuration file for port on the bridge devices
   template: src=bridge_port_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.1 }}
-  with_subelements: 
-   - network_bridge_interfaces
+  with_subelements:
+   - "{{ network_bridge_interfaces }}"
    - ports
-  when: network_bridge_interfaces is defined 
+  when: network_bridge_interfaces is defined
   register: bridge_port_result
 
 
+# Restart Network Interfaces (deconfigurate & reconfigurate interfaces) 
+- include: restartscript.yml
+  when: network_allow_service_restart and ansible_os_family == 'Debian'
 
-
-# RedHat stuff (needs testing)
-- name: Write configuration files for rhel route configuration with vlan
-  template: src=route_{{ ansible_os_family }}.j2 dest={{ net_path }}/route-{{ item.device }}
-  with_items: network_vlan_interfaces
-  when: network_ether_interfaces is defined and item.route is defined and ansible_os_family == 'RedHat'
-
-- name: Write configuration files for rhel route configuration
-  template: src=route_{{ ansible_os_family }}.j2 dest={{ net_path }}/route-{{ item.device }} 
-  with_items: network_ether_interfaces
-  when: network_ether_interfaces is defined and item.route is defined and ansible_os_family == 'RedHat'
-
-- name: Write configuration files for route configuration
-  template: src=route_{{ ansible_os_family }}.j2 dest={{ net_path }}/route-{{ item.device }} 
-  with_items: network_bond_interfaces
-  when: network_bond_interfaces is defined and item.route is defined and ansible_os_family == 'RedHat'
-
-- name: Write configuration files for rhel route configuration
-  template: src=route_{{ ansible_os_family }}.j2 dest={{ net_path }}/route-{{ item.device }} 
-  with_items: network_bridge_interfaces
-  when: network_bridge_interfaces is defined and item.route is defined and ansible_os_family == 'RedHat'
-
-
-
-# Restart interfaces to load new configuration
-#
-# we had a lot of problems with lost connectivity, therefore we changed the
-# role to use a script for network reconfiguration. 
-# Tested on Ubuntu 14.04 LTS and Bonding
-
-- name: Create temporary interface script for seamless network reload
-  shell: mktemp
-  register: mktemp_script
-
-- lineinfile: line="{{ item }}" dest={{ mktemp_script.stdout }} state=present insertafter=EOF
-  with_items:
-    - "ifdown "
-    - "sleep 1"
-    - "ifup "
-
-# Shutdown current network configuration
-- lineinfile: line="\1 {{ item.item.device }}" dest={{ mktemp_script.stdout }} state=present insertafter=EOF backrefs=True regexp='(ifdown .*)'
-  with_items: ether_result.results
-  when: ether_result is defined and 'results' in ether_result and item.changed
-
-- lineinfile: line="\1 {{ item.item.1 }}" dest={{ mktemp_script.stdout }} state=present  insertafter=EOF backrefs=True regexp='(ifdown .*)'
-  with_items: bond_port_result.results
-  when: bond_port_result is defined and 'results' in bond_port_result and item.changed
-
-- lineinfile: line="\1 {{ item.item.device }}" dest={{ mktemp_script.stdout }} state=present insertafter=EOF backrefs=True regexp='(ifdown .*)'
-  with_items: bond_result.results
-  when: bond_result is defined and 'results' in bond_result and item.changed
-
-- lineinfile: line="\1 {{ item.item.device }}" dest={{ mktemp_script.stdout }} state=present insertafter=EOF backrefs=True regexp='(ifdown .*)'
-  with_items: vlan_result.results
-  when: vlan_result is defined and item.changed
-
-- lineinfile: line="\1 {{ item.item.device }}" dest={{ mktemp_script.stdout }} state=present insertafter=EOF backrefs=True regexp='(ifdown .*)'
-  with_items: bridge_result.results
-  when: bridge_result is defined and 'results' in bridge_result and item.changed
+- name: Restart on RedHat Systems
+  service: name=network state=restarted
+  when: network_allow_service_restart and ansible_os_family == 'RedHat'
  
-- lineinfile: line="\1 {{ item.item.1 }};" dest={{ mktemp_script.stdout }} state=present insertafter=EOF backrefs=True regexp='(ifdown .*)'
-  with_items: bridge_port_result.results
-  when: bridge_port_result is defined and 'results' in bridge_port_result and item.changed
-
-# Start new network configuration
-- lineinfile: line="\1 {{ item.item.device }}" dest={{ mktemp_script.stdout }} state=present insertafter=EOF backrefs=True regexp='(ifup .*)'
-  with_items: ether_result.results
-  when: ether_result is defined and 'results' in ether_result and item.changed
-
-- lineinfile: line="\1 {{ item.item.1 }}" dest={{ mktemp_script.stdout }} state=present  insertafter=EOF backrefs=True regexp='(ifup .*)'
-  with_items: bond_port_result.results
-  when: bond_port_result is defined and 'results' in bond_port_result and item.changed
-
-- lineinfile: line="\1 {{ item.item.device }}" dest={{ mktemp_script.stdout }} state=present insertafter=EOF backrefs=True regexp='(ifup .*)'
-  with_items: bond_result.results
-  when: bond_result is defined and 'results' in bond_result and item.changed
-
-- lineinfile: line="\1 {{ item.item.device }}" dest={{ mktemp_script.stdout }} state=present insertafter=EOF backrefs=True regexp='(ifup .*)'
-  with_items: vlan_result.results
-  when: vlan_result is defined and item.changed
-
-- lineinfile: line="\1 {{ item.item.device }}" dest={{ mktemp_script.stdout }} state=present insertafter=EOF backrefs=True regexp='(ifup .*)'
-  with_items: bridge_result.results
-  when: bridge_result is defined and 'results' in bridge_result and item.changed
- 
-- lineinfile: line="\1 {{ item.item.1 }}" dest={{ mktemp_script.stdout }} state=present insertafter=EOF backrefs=True regexp='(ifup .*)'
-  with_items: bridge_port_result.results
-  when: bridge_port_result is defined and 'results' in bridge_port_result and item.changed
-
-# Execute configuration change
-- name: Execute Network Restart
-  shell: bash {{ mktemp_script.stdout }} | true
-
-# Cleanup
-- name: Cleanup Network Restart script
-  shell: rm {{ mktemp_script.stdout }}
 
