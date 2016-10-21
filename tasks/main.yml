@@ -54,7 +54,6 @@
   when: network_bridge_interfaces is defined
   register: bridge_port_result
 
-
 # Restart Network Interfaces (deconfigurate & reconfigurate interfaces) 
 - include: restartscript.yml
   when: network_allow_service_restart and ansible_os_family == 'Debian'
@@ -63,4 +62,3 @@
   service: name=network state=restarted
   when: network_allow_service_restart and ansible_os_family == 'RedHat'
  
-
