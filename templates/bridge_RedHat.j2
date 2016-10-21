@@ -3,6 +3,9 @@
 DEVICE={{ item.device }}
 TYPE=Bridge
 BOOTPROTO=none
+{% if item.mtu is defined %}
+MTU={{ item.mtu }}
+{% endif %}
 {% if item.stp is defined %}
 STP={{ item.stp }}
 {% endif %}
@@ -29,6 +32,9 @@ DNS{{ loop.index }}={{ dns_nameserver }}
 DEVICE={{ item.device }}
 TYPE=bridge
 BOOTPROTO=dhcp
+{% if item.mtu is defined %}
+MTU={{ item.mtu }}
+{% endif %}
 {% if item.stp is defined %}
 STP={{ item.stp }}
 {% endif %}

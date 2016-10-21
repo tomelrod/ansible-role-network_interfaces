@@ -2,20 +2,24 @@
 {% if item.bootproto != 'dhcp' %}
 DEVICE={{ item.device }}
 USERCTL=no
-BOOTPROTO=none
+BOOTPROTO=static
+BONDING_MASTER=yes
+TYPE=Bond
+DEFROUTE={{ item.defroute | default("yes")| bool | ternary("yes", "no")  }}
+{% if item.mtu is defined %}
+MTU={{ item.mtu }}
+{% endif %}
 {% if item.address is defined %}
 IPADDR={{ item.address }}
 {% endif %}
-{% if item.onboot is defined %}
-ONBOOT={{ item.onboot|default("yes") }}
-{% endif %}
+ONBOOT={{ item.onboot | default("yes") | bool | ternary("yes", "no") }}
 {% if item.netmask is defined %}
 NETMASK={{ item.netmask }}
 {% endif %}
 {% if item.gateway is defined %}
 GATEWAY={{ item.gateway }}
 {% endif %}
-BONDING_OPTS="mode={{ item.bond_mode }} miimon={{ item.bond_miimon|default(100) }} {{ item.bond_extra_opts|default('') }}"
+{% include "RedHat_bond_options.j2" %}
 {% endif %}
 {% if item.dns_nameservers is defined %}
 {% for dns_nameserver in item.dns_nameservers %}
@@ -25,10 +29,14 @@ DNS{{ loop.index }}={{ dns_nameserver }}
 
 {% if item.bootproto == 'dhcp' %}
 DEVICE={{ item.device }}
-BONDING_OPTS="mode={{ item.bond_mode }} miimon={{ item.bond_miimon|default(100) }} {{ item.bond_extra_opts|default('') }}"
+{% include "RedHat_bond_options.j2" %}
 USERCTL=no
-ONBOOT={{ item.onboot|default("yes") }}
+ONBOOT={{ item.onboot | default("yes") | bool | ternary("yes", "no") }}
 BOOTPROTO=dhcp
+TYPE=Bond
+{% if item.mtu is defined %}
+MTU={{ item.mtu }}
+{% endif %}
 {% endif %}
 
 {% if item.nm_controlled is defined %}

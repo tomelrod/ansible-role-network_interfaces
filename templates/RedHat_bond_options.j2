@@ -1,0 +1,11 @@
+BONDING_OPTS="mode={{ item.bond_mode }} miimon={{ item.bond_miimon|default(100) }}
+{%- if item.bond_downdelay is defined %}
+ downdelay={{ item.bond_downdelay }}
+{%- endif -%}
+{%- if item.bond_updelay is defined %}
+ updelay={{ item.bond_updelay }}
+{%- endif -%}
+{%- if item.bond_primary is defined %}
+ primary={{ item.bond_primary }}
+{%- endif -%}
+"
