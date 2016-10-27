@@ -2,15 +2,8 @@
 {% if item.bootproto == 'static' %}
 DEVICE={{ item.device }}
 BOOTPROTO=static
-{% if item.defroute is defined %}
-DEFROUTE={{ item.defroute }}
-{% endif %}
 {% if item.address is defined %}
 IPADDR={{ item.address }}
-{% endif %}
-ONBOOT={{ item.onboot | default("yes") }}
-{% if item.mtu is defined %}
-MTU={{ item.mtu }}
 {% endif %}
 {% if item.netmask is defined %}
 NETMASK={{ item.netmask }}
@@ -27,17 +20,13 @@ GATEWAY={{ item.gateway }}
 DNS{{ loop.index }}={{ dns_nameserver }}
 {% endfor %}
 {% endif %}
-+{% if item.hwaddress is defined%}
-+HWADDR={{ item.hwaddress }}
-+{% endif %}
+{% if item.hwaddress is defined%}
+HWADDR={{ item.hwaddress }}
+{% endif %}
 
 {% if item.bootproto == 'dhcp' %}
 DEVICE={{ item.device }}
 BOOTPROTO=dhcp
-ONBOOT={{ item.onboot | default("yes") }}
-{% if item.mtu is defined %}
-MTU={{ item.mtu }}
-{% endif %}
 {% if item.vlan is defined and item.vlan | bool %}
 {% include  "ethernet_RedHat_vlan_options.j2" %}
 {% endif %}
@@ -62,8 +51,12 @@ IPV6ADDR={{ item.ipv6_address }}
 IPV6_DEFAULTGW="{{ item.ipv6_gateway }}"
 {% endif %}
 
+{% if item.onboot is defined %}
+ONBOOT={{ item.onboot | bool | ternary("yes", "no") }}
+{% endif %}
+
 {% if item.defroute is defined %}
-DEFROUTE={{ item.defroute }}
+DEFROUTE={{ item.defroute | bool | ternary("yes", "no") }}
 {% endif %}
 
 {% if item.mtu is defined %}

@@ -12,9 +12,6 @@ STP={{ item.stp }}
 {% if item.address is defined %}
 IPADDR={{ item.address }}
 {% endif %}
-{% if item.onboot is defined %}
-ONBOOT={{ item.onboot }}
-{% endif %}
 {% if item.netmask is defined %}
 NETMASK={{ item.netmask }}
 {% endif %}
@@ -40,6 +37,10 @@ STP={{ item.stp }}
 {% endif %}
 {% endif %}
 
+{% if item.onboot is defined %}
+ONBOOT={{ item.onboot | bool | ternary("yes", "no") }}
+{% endif %}
+
 {% if item.nm_controlled is defined %}
 NM_CONTROLLED={{ item.nm_controlled }}
 {% endif %}
@@ -60,7 +61,7 @@ IPV6_DEFAULTGW="{{ item.ipv6_gateway }}"
 {% endif %}
 
 {% if item.defroute is defined %}
-DEFROUTE={{ item.defroute }}
+DEFROUTE={{ item.defroute | bool | ternary("yes", "no") }}
 {% endif %}
 
 {% if item.mtu is defined %}
