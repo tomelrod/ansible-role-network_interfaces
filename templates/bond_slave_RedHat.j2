@@ -10,7 +10,7 @@ NM_CONTROLLED={{ item.nm_controlled }}
 {% endif %}
 
 {% if item.defroute is defined %}
-DEFROUTE={{ item.defroute }}
+DEFROUTE={{ item.defroute | bool | ternary("yes", "no") }}
 {% endif %}
 
 {% if item.0.mtu is defined %}

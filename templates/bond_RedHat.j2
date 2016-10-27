@@ -5,14 +5,9 @@ USERCTL=no
 BOOTPROTO=static
 BONDING_MASTER=yes
 TYPE=Bond
-DEFROUTE={{ item.defroute | default("yes")| bool | ternary("yes", "no")  }}
-{% if item.mtu is defined %}
-MTU={{ item.mtu }}
-{% endif %}
 {% if item.address is defined %}
 IPADDR={{ item.address }}
 {% endif %}
-ONBOOT={{ item.onboot | default("yes") | bool | ternary("yes", "no") }}
 {% if item.netmask is defined %}
 NETMASK={{ item.netmask }}
 {% endif %}
@@ -31,12 +26,12 @@ DNS{{ loop.index }}={{ dns_nameserver }}
 DEVICE={{ item.device }}
 {% include "RedHat_bond_options.j2" %}
 USERCTL=no
-ONBOOT={{ item.onboot | default("yes") | bool | ternary("yes", "no") }}
 BOOTPROTO=dhcp
 TYPE=Bond
-{% if item.mtu is defined %}
-MTU={{ item.mtu }}
 {% endif %}
+
+{% if item.onboot is defined %}
+ONBOOT={{ item.onboot | bool | ternary("yes", "no") }}
 {% endif %}
 
 {% if item.nm_controlled is defined %}
@@ -44,7 +39,7 @@ NM_CONTROLLED={{ item.nm_controlled }}
 {% endif %}
 
 {% if item.defroute is defined %}
-DEFROUTE={{ item.defroute }}
+DEFROUTE={{ item.defroute | bool | ternary("yes", "no") }}
 {% endif %}
 
 {% if item.mtu is defined %}
@@ -58,4 +53,3 @@ BONDING_MASTER={{ item.bonding_master }}
 {% if item.bridge is defined %}
 BRIDGE={{ item.bridge }}
 {% endif %}
-
