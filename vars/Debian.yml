@@ -1,5 +1,4 @@
 ---
-
 network_pkgs:
   - python-selinux
   - bridge-utils

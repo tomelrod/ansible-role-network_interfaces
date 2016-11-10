@@ -1,13 +1,13 @@
-
 ---
-
 - name: Add the OS specific varibles
   include_vars: "{{ ansible_os_family }}.yml"
 
 # RedHat specific stuff
 - include: redhat.yml
+  when: ansible_os_family == 'RedHat'
 # Debian/Ubuntu specific stuff
 - include: debian.yml
+  when: ansible_os_family == "Debian"
 
 # Create configuration files in the net_path for ethernet, vlan, bond and bridge interfaces
 - name: Create the network configuration file for ethernet devices
@@ -54,11 +54,10 @@
   when: network_bridge_interfaces is defined
   register: bridge_port_result
 
-# Restart Network Interfaces (deconfigurate & reconfigurate interfaces) 
+# Restart Network Interfaces (deconfigurate & reconfigurate interfaces)
 - include: restartscript.yml
   when: network_allow_service_restart and ansible_os_family == 'Debian'
 
 - name: Restart on RedHat Systems
   service: name=network state=restarted
   when: network_allow_service_restart and ansible_os_family == 'RedHat'
- 

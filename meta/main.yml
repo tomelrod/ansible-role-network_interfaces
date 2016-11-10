@@ -3,7 +3,7 @@ galaxy_info:
   author: "Benno Joy, Martin Verges"
   company: "AnsibleWorks, First Colo GmbH"
   license: "Simplified BSD License"
-  min_ansible_version: 2.0 
+  min_ansible_version: 1.9
   platforms:
   - name: Debian
     versions:
@@ -23,4 +23,3 @@ galaxy_info:
     - networking
     - system
 dependencies: []
-  

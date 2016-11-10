@@ -43,7 +43,7 @@ Note: The values for the list are listed in the examples below.
 Examples
 --------
 
-For all network configurations, it is possible to use CIDR or IPv4 Address notation. 
+For all network configurations, it is possible to use CIDR or IPv4 Address notation.
 I recomend the use of CIDR, because it helps to get a simpler configuration and it
 is the only way for IPv6 Addresses.
 
@@ -51,8 +51,8 @@ IPv4 Example with CIDR notation:
 
       cidr: 192.168.10.18/24
       # OPTIONAL: specify a gateway for that network, or auto for network+1
-      gateway: auto 
- 
+      gateway: auto
+
 IPv4 Example with classic IPv4:
 
       address: 192.168.10.18
@@ -65,14 +65,14 @@ If you want to use a different MAC Address for your Interface, you can simply ad
 
       hwaddress: aa:bb:cc:dd:ee:ff
 
-On some rare occasion it might be good to set whatever option you like. Therefore it 
+On some rare occasion it might be good to set whatever option you like. Therefore it
 is possible to use
 
       options:
           - "up /execute/my/command"
           - "down /execute/my/other/command"
 
-and the IPv6 version 
+and the IPv6 version
 
       ipv6_options:
           - "up /execute/my/command"
@@ -89,7 +89,7 @@ define static routes and a gateway.
            - device: eth1
              bootproto: static
              cidr: 192.168.10.18/24
-             gateway: auto 
+             gateway: auto
              route:
               - network: 192.168.200.0
                 netmask: 255.255.255.0
@@ -102,7 +102,7 @@ define static routes and a gateway.
 
 Note: it is not required to add routes, default route will be added automatically.
 
-2) Configure a bridge interface with multiple NIcs added to the bridge. 
+2) Configure a bridge interface with multiple NIcs added to the bridge.
 
     - hosts: myhost
       roles:
@@ -114,7 +114,7 @@ Note: it is not required to add routes, default route will be added automaticall
               bridge_ports: [eth1, eth2]
 
               # Optional values
-              bridge_ageing: 300 
+              bridge_ageing: 300
               bridge_bridgeprio: 32768
               bridge_fd: 15
               bridge_gcint: 4
@@ -237,8 +237,8 @@ and routed updated.
 
 Note: Ansible needs network connectivity throughout the playbook process, you
 may need to have a control interface that you do *not* modify using this
-method while changeing IP Addresses so that Ansible has a stable connection 
-to configure the target systems. All network changes are done within a single 
+method while changeing IP Addresses so that Ansible has a stable connection
+to configure the target systems. All network changes are done within a single
 generated script and network connectivity is only lost for few seconds.
 
 
@@ -260,4 +260,4 @@ based on role from Benno Joy
 Improvements from some other GIT Forks
 
 Debian Upgrades by Martin Verges, First Colo GmbH
-
+RedHat Upgrades by Wei Tie, Cisco Systems, Inc.
