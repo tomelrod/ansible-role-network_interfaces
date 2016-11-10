@@ -16,13 +16,7 @@ iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto
 
 {% if item.ipv6_address is defined %}
 iface {{ item.device }} inet6 static
-    address   {{ item.ipv6_address | ipaddr('address') }} 
-    netmask   {{ item.ipv6_address | ipaddr('prefix') }}
-{% if item.ipv6_gateway is defined %}
-    gateway   {{ item.ipv6_gateway }}
-{% else %}
-    gateway   {{ item.ipv6_address | ipaddr('1') | ipaddr('address') }}
-{% endif %}
+{% include 'Debian_ipv6_config.j2' %}
 {% if item.ipv6_options is defined %}
 {% for option in item.ipv6_options %}
     {{ option }}

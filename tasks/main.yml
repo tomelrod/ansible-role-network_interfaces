@@ -47,10 +47,9 @@
   register: bridge_result
 
 - name: Create the network configuration file for port on the bridge devices
-  template: src=bridge_port_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.1 }}
-  with_subelements:
-   - "{{ network_bridge_interfaces }}"
-   - bridge_ports
+  template: src=bridge_port_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item }}
+  with_items:
+   - "{{ network_bridge_interfaces | selectattr('bridge_ports', 'defined') | list }}"
   when: network_bridge_interfaces is defined
   register: bridge_port_result
 
