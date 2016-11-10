@@ -4,6 +4,7 @@ iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto
 
 {% include 'Debian_ipv4_config.j2' %}
 {% include 'Debian_resolvconf.j2' %}
+{% include 'route_Debian.j2' %}
 
 {% if item.bond_mode is defined and item.bond_slaves is defined %}
 {% if item.bond_mode is defined %}
@@ -68,12 +69,6 @@ iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto
 {% if item.options is defined %}
 {% for option in item.options %}
 	{{ option }}
-{% endfor %}
-{% endif %}
-
-{% if item.route is defined %}
-{% for i in item.route %}
-    up ip route add {{ i.network }}/{{ i.netmask }} via {{ i.gateway }} dev {{ item.device }}
 {% endfor %}
 {% endif %}
 

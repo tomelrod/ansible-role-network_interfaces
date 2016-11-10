@@ -1,4 +1,7 @@
 {% for i in item.route %}
-    up ip route add {{ i.network }}/{{ i.netmask }} via {{ i.gateway }} dev {{ item.device }}
+{% if i.cidr is defined %}
+    up ip route add {{ i.cidr }} via {{ i.gateway }} dev {{ item.device }}
+{% else %}
+    up route add -net {{ i.network }} netmask {{ i.netmask }} gw {{ i.gateway }} {{ item.device }}
+{% endif %}
 {% endfor %}
-

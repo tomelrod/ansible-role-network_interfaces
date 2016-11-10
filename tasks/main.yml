@@ -50,7 +50,7 @@
   template: src=bridge_port_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.1 }}
   with_subelements:
    - "{{ network_bridge_interfaces }}"
-   - ports
+   - bridge_ports
   when: network_bridge_interfaces is defined
   register: bridge_port_result
 
