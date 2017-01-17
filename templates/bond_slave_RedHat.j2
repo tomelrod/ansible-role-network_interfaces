@@ -16,4 +16,3 @@ DEFROUTE={{ item.defroute | bool | ternary("yes", "no") }}
 {% if item.0.mtu is defined %}
 MTU={{ item.0.mtu }}
 {% endif %}
-
