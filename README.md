@@ -145,7 +145,6 @@ added for ethernet interfaces.
               bond_miimon: 100
               bond_lacp_rate: slow
               bond_xmit_hash_policy: layer3+4
-              bond_extra_opts:
 
 4) Configure a bonded interface with "802.3ad" as the bonding mode and IP
 address obtained via DHCP.
@@ -260,3 +259,4 @@ based on role from Benno Joy
 Improvements from some other GIT Forks  
 Debian Upgrades by Martin Verges, First Colo GmbH  
 RedHat Upgrades by Wei Tie, Cisco Systems, Inc.
+Improvements to RHEL bond support by Eric Anderson, Avi Networks, Inc.
