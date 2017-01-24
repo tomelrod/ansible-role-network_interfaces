@@ -12,7 +12,7 @@ BONDING_OPTS="mode={{ item.bond_mode }} miimon={{ item.bond_miimon|default(100) 
  primary={{ item.bond_primary }}
 {%- endif -%}
 {%- if item.bond_use_carrier is defined %}
- {{ item.bond_use_carrier }}
+ use_carrier={{ item.bond_use_carrier }}
 {%- endif -%}
 {%- if item.bond_extra_opts is defined %}
  {{ item.bond_extra_opts }}
