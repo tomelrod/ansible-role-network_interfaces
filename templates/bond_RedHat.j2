@@ -2,7 +2,7 @@
 {% if item.bootproto != 'dhcp' %}
 DEVICE={{ item.device }}
 USERCTL=no
-BOOTPROTO=static
+BOOTPROTO={{ item.bootproto|default('static') }}
 BONDING_MASTER=yes
 TYPE=Bond
 {% if item.address is defined %}
