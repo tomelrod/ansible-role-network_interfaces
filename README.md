@@ -26,17 +26,12 @@ Role Variables
 The variables that can be passed to this role and a brief description about
 them are as follows:
 
-    # The list of ethernet interfaces to be added to the system
-    network_ether_interfaces: []
-
-    # The list of bridge interfaces to be added to the system
-    network_bridge_interfaces: []
-
-    # The list of bonded interfaces to be added to the system
-    network_bond_interfaces: []
-
-    # The list of vlan interfaces to be added to the system
-    network_vlan_interfaces: []
+| Variable | Required | Default | Comments |
+|-----------------------|----------|-----------|---------|
+| `network_ether_interfaces` | No | `[]` | The list of ethernet interfaces to be added to the system. |
+| `network_bridge_interfaces` | No | `[]` | The list of bridge interfaces to be added to the system. |
+| `network_bond_interfaces` | No | `[]` | The list of bonded interfaces to be added to the system. |
+| `network_vlan_interfaces` | No | `[]` | The list of vlan interfaces to be added to the system. |
 
 Note: The values for the list are listed in the examples below.
 
