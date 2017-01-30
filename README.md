@@ -253,5 +253,5 @@ Author Information
 based on role from Benno Joy  
 Improvements from some other GIT Forks  
 Debian Upgrades by Martin Verges, First Colo GmbH  
-RedHat Upgrades by Wei Tie, Cisco Systems, Inc.
+RedHat Upgrades by Wei Tie, Cisco Systems, Inc.   
 Improvements to RHEL bond support by Eric Anderson, Avi Networks, Inc.
