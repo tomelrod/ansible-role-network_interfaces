@@ -58,6 +58,51 @@
 - include: restartscript.yml
   when: network_allow_service_restart and ansible_os_family == 'Debian'
 
-- name: Restart on RedHat Systems
-  service: name=network state=restarted
+- name: Checking if the "network" service is enabled
+  service: name=network enabled=yes
+  register: network_service
   when: network_allow_service_restart and ansible_os_family == 'RedHat'
+
+- name: Checking if the "NetworkManager" service is enabled
+  service: name=NetworkManager enabled=yes
+  register: NetworkManager_service
+  when: network_allow_service_restart and ansible_os_family == 'RedHat'
+
+- service: name=network enabled=no
+  when: >
+    network_allow_service_restart
+    and ansible_os_family == 'RedHat'
+    and network_service.changed
+
+- service: name=NetworkManager enabled=no
+  when: >
+    network_allow_service_restart
+    and ansible_os_family == 'RedHat'
+    and NetworkManager_service.changed
+
+- name: Restart the "network" service on Red Hat systems
+  service: name=network state=restarted
+  when: >
+    network_allow_service_restart
+    and ansible_os_family == 'RedHat'
+    and not network_service.changed
+    and NetworkManager_service.changed
+
+- name: Restart the "NetworkManager" service on Red Hat systems
+  service: name=network state=restarted
+  when: >
+    network_allow_service_restart
+    and ansible_os_family == 'RedHat'
+    and network_service.changed
+    and not NetworkManager_service.changed
+
+- name: Restart the "network" and "NetworkManager" service on Red Hat systems
+  service: name={{ item }} state=restarted
+  with_flattened:
+    - network
+    - NetworkManager
+  when: >
+    network_allow_service_restart
+    and ansible_os_family == 'RedHat'
+    and not network_service.changed
+    and not NetworkManager_service.changed
