@@ -16,6 +16,7 @@ GATEWAY={{ item.gateway }}
 {% endif %}
 {% include "RedHat_bond_options.j2" %}
 {% endif %}
+
 {% if item.dns_nameservers is defined %}
 {% for dns_nameserver in item.dns_nameservers %}
 DNS{{ loop.index }}={{ dns_nameserver }}
