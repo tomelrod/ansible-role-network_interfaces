@@ -235,6 +235,30 @@ and routed updated.
       roles:
         - role: network
 
+9) This role can also optionally add network interfaces to firewalld zones. The
+core firewalld module (http://docs.ansible.com/ansible/latest/firewalld_module.html)
+can perform the same function, so if you make use of both modules then your
+playbooks may not be idempotent.  Consider this case, where only the firewalld
+module is used:
+
+  * network_interface role runs; with no firewalld_zone host var set then any
+    ZONE line will be removed from ifcfg-*
+  * firewalld module runs; adds a ZONE line to ifcfg-*
+  * On the next playbook run, the network_interface role runs and removes the
+    ZONE line again, and so the cycle repeats.
+
+In order for this role to manage firewalld zones, the system must be running a
+RHEL based distribution, and using NetworkManager to manage the network
+interfaces.  If those criteria are met, the following example shows how to add
+the eth0 interface to the public firewalld zone:
+
+       - device: eth0
+         bootproto: static
+         address: 192.168.10.18
+         netmask: 255.255.255.0
+         gateway: 192.168.10.1
+         firewalld_zone: public
+
 Note: Ansible needs network connectivity throughout the playbook process, you
 may need to have a control interface that you do *not* modify using this
 method while changeing IP Addresses so that Ansible has a stable connection

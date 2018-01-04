@@ -54,3 +54,7 @@ BONDING_MASTER={{ item.bonding_master }}
 {% if item.bridge is defined %}
 BRIDGE={{ item.bridge }}
 {% endif %}
+
+{% if item.firewalld_zone is defined %}
+ZONE={{ item.firewalld_zone }}
+{% endif %}
