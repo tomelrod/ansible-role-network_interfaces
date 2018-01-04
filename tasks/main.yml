@@ -60,52 +60,48 @@
 
 - name: Checking if the "network" service is enabled
   service: name=network enabled=yes
+  check_mode: yes
   register: network_service
   ignore_errors: true
   when: network_allow_service_restart and ansible_os_family == 'RedHat'
 
 - set_fact:
-    network_service_present_enabled: "{{ network_service.failed is
-        not defined and not network_service.changed }}"
-    network_service_present_disabled: "{{ network_service.failed is
-        not defined and network_service.changed }}"
+    network_service_enabled: "{{ not network_service.failed
+        and not network_service.changed }}"
 
 - name: Checking if the "NetworkManager" service is enabled
   service: name=NetworkManager enabled=yes
+  check_mode: yes
   register: NetworkManager_service
   ignore_errors: true
   when: network_allow_service_restart and ansible_os_family == 'RedHat'
 
 - set_fact:
-    NetworkManager_service_present_enabled: "{{
-        NetworkManager_service.failed is not defined and not
-        NetworkManager_service.changed }}"
-    NetworkManager_service_present_disabled: "{{
-        NetworkManager_service.failed is not defined and
-        NetworkManager_service.changed }}"
-
-- service: name=network enabled=no
-  when: >
-    network_allow_service_restart
-    and ansible_os_family == 'RedHat'
-    and network_service_present_disabled
-
-- service: name=NetworkManager enabled=no
-  when: >
-    network_allow_service_restart
-    and ansible_os_family == 'RedHat'
-    and NetworkManager_service_present_disabled
+    NetworkManager_service_enabled: "{{ not NetworkManager_service.failed
+        and not NetworkManager_service.changed }}"
 
 - name: Restart the "network" service on Red Hat systems
   service: name=network state=restarted
   when: >
-    network_allow_service_restart
-    and ansible_os_family == 'RedHat'
-    and network_service_present_enabled
+    (network_allow_service_restart
+     and ansible_os_family == 'RedHat'
+     and network_service_enabled)
+     and (ether_result | changed
+          or bond_port_result | changed
+          or bond_result | changed
+          or vlan_result | changed
+          or bridge_result | changed
+          or bridge_port_result | changed)
 
 - name: Restart the "NetworkManager" service on Red Hat systems
   service: name=network state=restarted
   when: >
-    network_allow_service_restart
+    (network_allow_service_restart
     and ansible_os_family == 'RedHat'
-    and NetworkManager_service_present_enabled
+    and NetworkManager_service_enabled) and
+    (ether_result | changed or
+     bond_port_result | changed or
+     bond_result | changed or
+     vlan_result | changed or
+     bridge_result | changed or
+     bridge_port_result | changed)
