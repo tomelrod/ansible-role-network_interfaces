@@ -68,6 +68,7 @@
 - set_fact:
     network_service_enabled: "{{ not network_service.failed
         and not network_service.changed }}"
+  when: network_allow_service_restart and ansible_os_family == 'RedHat'
 
 - name: Checking if the "NetworkManager" service is enabled
   service: name=NetworkManager enabled=yes
@@ -79,6 +80,7 @@
 - set_fact:
     NetworkManager_service_enabled: "{{ not NetworkManager_service.failed
         and not NetworkManager_service.changed }}"
+  when: network_allow_service_restart and ansible_os_family == 'RedHat'
 
 - name: Restart the "network" service on Red Hat systems
   service: name=network state=restarted
