@@ -2,9 +2,9 @@
     dns-nameservers        {{ item.dns_nameservers|join(' ') }}
 {% endif %}
 {% if item.dns_search is defined %}
-    dns-search             {{ item.dns-search }}
+    dns-search             {{ item.dns_search }}
 {% endif %}
 {% if item.dns_domain is defined %}
-    dns-domain             {{ item.dns-domain }}
+    dns-domain             {{ item.dns_domain }}
 {% endif %}
 
