@@ -6,21 +6,21 @@ galaxy_info:
   license: "Simplified BSD License"
   min_ansible_version: 1.9
   platforms:
-  - name: Debian
-    versions:
-      - wheezy
-      - jessie
-  - name: Ubuntu
-    versions:
-      - precise
-      - quantal
-      - raring
-      - saucy
-      - trusty
-      - utopic
-      - vivid
-  - name: EL
-  categories:
+    - name: Debian
+      versions:
+        - wheezy
+        - jessie
+    - name: Ubuntu
+      versions:
+        - precise
+        - quantal
+        - raring
+        - saucy
+        - trusty
+        - utopic
+        - vivid
+    - name: EL
+  galaxy_tags:
     - networking
     - system
 dependencies: []
