@@ -62,3 +62,7 @@ DEFROUTE={{ item.defroute | bool | ternary("yes", "no") }}
 {% if item.mtu is defined %}
 MTU={{ item.mtu }}
 {% endif %}
+
+{% if item.firewalld_zone is defined %}
+ZONE={{ item.firewalld_zone }}
+{% endif %}
