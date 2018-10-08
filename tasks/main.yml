@@ -2,22 +2,26 @@
 - name: Add the OS specific varibles
   include_vars: "{{ ansible_os_family }}.yml"
 
-# RedHat specific stuff
-- include: redhat.yml
+- name: Include specific tasks for the RedHat family
+  include: redhat.yml
   when: ansible_os_family == 'RedHat'
-# Debian/Ubuntu specific stuff
-- include: debian.yml
+
+- name: Include specific tasks for the Debian family
+  include: debian.yml
   when: ansible_os_family == "Debian"
 
-# Create configuration files in the net_path for ethernet, vlan, bond and bridge interfaces
-- name: Create the network configuration file for ethernet devices
-  template: src=ethernet_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
+- name: Create the network configuration file for ethernet interfaces
+  template:
+    src: "ethernet_{{ ansible_os_family }}.j2"
+    dest: "{{ net_path }}/ifcfg-{{ item.device }}"
   with_items: "{{ network_ether_interfaces }}"
   when: network_ether_interfaces is defined
   register: ether_result
 
 - name: Create the network configuration file for slave in the bond devices
-  template: src=bond_slave_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.1 }}
+  template:
+    src: "bond_slave_{{ ansible_os_family }}.j2"
+    dest: "{{ net_path }}/ifcfg-{{ item.1 }}"
   with_subelements:
    - "{{ network_bond_interfaces }}"
    - bond_slaves
@@ -25,29 +29,39 @@
   register: bond_port_result
 
 - name: Create the network configuration file for bond devices
-  template: src=bond_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
+  template:
+    src: "bond_{{ ansible_os_family }}.j2"
+    dest: "{{ net_path }}/ifcfg-{{ item.device }}"
   with_items: "{{ network_bond_interfaces }}"
   when: network_bond_interfaces is defined
   register: bond_result
 
 - name: Make sure the bonding module is loaded
-  modprobe: name=bonding state=present
+  modprobe:
+    name: bonding
+    state: present
   when: bond_result|changed
 
 - name: Create the network configuration file for vlan devices
-  template: src=ethernet_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
+  template:
+    src: "ethernet_{{ ansible_os_family }}.j2"
+    dest: "{{ net_path }}/ifcfg-{{ item.device }}"
   with_items: "{{ network_vlan_interfaces }}"
   when: network_vlan_interfaces is defined
   register: vlan_result
 
 - name: Create the network configuration file for bridge devices
-  template: src=bridge_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
+  template:
+    src: "bridge_{{ ansible_os_family }}.j2"
+    dest: "{{ net_path }}/ifcfg-{{ item.device }}"
   with_items: "{{ network_bridge_interfaces }}"
   when: network_bridge_interfaces is defined
   register: bridge_result
 
 - name: Create the network configuration file for port on the bridge devices
-  template: src=bridge_port_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.1 }}
+  template:
+    src: "bridge_port_{{ ansible_os_family }}.j2"
+    dest: "{{ net_path }}/ifcfg-{{ item.1 }}"
   with_subelements:
     - '{{ network_bridge_interfaces }}'
     - bridge_ports
@@ -58,32 +72,40 @@
 - include: restartscript.yml
   when: network_allow_service_restart and ansible_os_family == 'Debian'
 
-- name: Checking if the "network" service is enabled
-  service: name=network enabled=yes
+- name: Enable the "network" service
+  service:
+    name: network
+    enabled: true
   check_mode: yes
   register: network_service
   ignore_errors: true
   when: network_allow_service_restart and ansible_os_family == 'RedHat'
 
-- set_fact:
+- name: Verify if the "network" service is enabled
+  set_fact:
     network_service_enabled: "{{ not network_service.failed
         and not network_service.changed }}"
   when: network_allow_service_restart and ansible_os_family == 'RedHat'
 
-- name: Checking if the "NetworkManager" service is enabled
-  service: name=NetworkManager enabled=yes
+- name: Enable the "NetworkManager" service
+  service:
+    name: NetworkManager
+    enabled: true
   check_mode: yes
   register: NetworkManager_service
   ignore_errors: true
   when: network_allow_service_restart and ansible_os_family == 'RedHat'
 
-- set_fact:
+- name: Verify if the "NetworkManager" service is enabled
+  set_fact:
     NetworkManager_service_enabled: "{{ not NetworkManager_service.failed
         and not NetworkManager_service.changed }}"
   when: network_allow_service_restart and ansible_os_family == 'RedHat'
 
 - name: Restart the "network" service on Red Hat systems
-  service: name=network state=restarted
+  service:
+    name: network
+    state: restarted
   when: >
     (network_allow_service_restart
      and ansible_os_family == 'RedHat'
@@ -96,7 +118,9 @@
           or bridge_port_result is changed)
 
 - name: Restart the "NetworkManager" service on Red Hat systems
-  service: name=network state=restarted
+  service:
+    name: network
+    state: restarted
   when: >
     (network_allow_service_restart
     and ansible_os_family == 'RedHat'

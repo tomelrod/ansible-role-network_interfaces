@@ -38,17 +38,15 @@ Note: The values for the list are listed in the examples below.
 Examples
 --------
 
-For all network configurations, it is possible to use CIDR or IPv4 Address notation.
-I recomend the use of CIDR, because it helps to get a simpler configuration and it
-is the only way for IPv6 Addresses.
+Debian (not RedHat) network configurations can optionally use CIDR notation for IPv4 addresses instead of specifying the address and subnet mask separately. It is required to use CIDR notation for IPv6 addresses on Debian.
 
-IPv4 Example with CIDR notation:
+IPv4 example with CIDR notation:
 
       cidr: 192.168.10.18/24
       # OPTIONAL: specify a gateway for that network, or auto for network+1
       gateway: auto
 
-IPv4 Example with classic IPv4:
+IPv4 example with classic IPv4:
 
       address: 192.168.10.18
       netmask: 255.255.255.0
@@ -274,8 +272,16 @@ BSD
 Author Information
 ------------------
 
-based on role from Benno Joy  
-Improvements from some other GIT Forks  
-Debian Upgrades by Martin Verges, croit GmbH  
-RedHat Upgrades by Wei Tie, Cisco Systems, Inc.   
-Improvements to RHEL bond support by Eric Anderson, Avi Networks, Inc.
+This project was originally created by [Benno Joy](https://github.com/bennojoy/network_interface).
+
+Debian upgrades by:
+
+* Martin Verges (croit, GmbH)
+
+RedHat upgrades by:
+
+* Eric Anderson (Avi Networks, Inc.)
+* Luke Short (Red Hat, Inc.)
+* Wei Tie, (Cisco Systems, Inc.)
+
+The full list of contributors can be found [here](https://github.com/MartinVerges/ansible.network_interface/graphs/contributors).

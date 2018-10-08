@@ -4,12 +4,14 @@ TYPE=Vlan
 PHYSDEV={{ item.vlan_physdev }}
 {% else %}
 PHYSDEV={{ item.device.rpartition('.')[0] }}
-{% endif %}
+{% endif -%}
+
 {% if item.vlan_id is defined %}
 VLAN_ID={{ item.vlan_id }}
 {% else %}
 VLAN_ID={{ item.device.rpartition('.')[2] }}
-{% endif %}
+{% endif -%}
+
 {% if item.reorder_hdr is defined %}
 REORDER_HDR={{ item.reorder_hdr }}
 {% endif %}
