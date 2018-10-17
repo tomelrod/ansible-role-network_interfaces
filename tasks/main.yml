@@ -32,7 +32,7 @@
 
 - name: Make sure the bonding module is loaded
   modprobe: name=bonding state=present
-  when: bond_result|changed
+  when: bond_result is changed
 
 - name: Create the network configuration file for vlan devices
   template: src=ethernet_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
