@@ -10,6 +10,8 @@
   include: debian.yml
   when: ansible_os_family == "Debian"
 
+
+# Create network configuration files for any general interface
 - name: Create the network configuration file for ethernet interfaces
   template:
     src: "ethernet_{{ ansible_os_family }}.j2"
@@ -18,6 +20,8 @@
   when: network_ether_interfaces is defined
   register: ether_result
 
+
+# Create configs for bond devices and their slaves
 - name: Create the network configuration file for slave in the bond devices
   template:
     src: "bond_slave_{{ ansible_os_family }}.j2"
@@ -42,6 +46,8 @@
     state: present
   when: bond_result|changed
 
+
+# Create configs for vlans
 - name: Create the network configuration file for vlan devices
   template:
     src: "ethernet_{{ ansible_os_family }}.j2"
@@ -50,6 +56,8 @@
   when: network_vlan_interfaces is defined
   register: vlan_result
 
+
+# Create configs for bridge devices and their ports
 - name: Create the network configuration file for bridge devices
   template:
     src: "bridge_{{ ansible_os_family }}.j2"
@@ -68,9 +76,13 @@
   when: network_bridge_interfaces is defined
   register: bridge_port_result
 
+
+
 # Restart Network Interfaces (deconfigurate & reconfigurate interfaces)
 - include: restartscript.yml
   when: network_allow_service_restart and ansible_os_family == 'Debian'
+
+
 
 - name: Enable the "network" service
   service:
@@ -101,6 +113,8 @@
     NetworkManager_service_enabled: "{{ not NetworkManager_service.failed
         and not NetworkManager_service.changed }}"
   when: network_allow_service_restart and ansible_os_family == 'RedHat'
+
+
 
 - name: Restart the "network" service on Red Hat systems
   service:

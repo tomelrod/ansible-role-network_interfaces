@@ -1,0 +1,29 @@
+{% if item.dns_nameservers is defined %}
+    {% for dns_nameserver in item.dns_nameservers %}
+DNS{{ loop.index }}={{ dns_nameserver }}
+    {% endfor %}
+{% endif -%}
+
+{% if item.nm_controlled is defined %}
+NM_CONTROLLED={{ item.nm_controlled | bool | ternary("yes", "no") }}
+{% endif -%}
+
+{% if item.onboot is defined %}
+ONBOOT={{ item.onboot | bool | ternary("yes", "no") }}
+{% endif -%}
+
+{% if item.defroute is defined %}
+DEFROUTE={{ item.defroute | bool | ternary("yes", "no") }}
+{% endif -%}
+
+{% if item.stp is defined %}
+STP={{ item.stp }}
+{% endif -%}
+
+{% if item.mtu is defined %}
+MTU={{ item.mtu }}
+{% endif -%}
+
+{% if item.firewalld_zone is defined %}
+ZONE={{ item.firewalld_zone }}
+{% endif -%}

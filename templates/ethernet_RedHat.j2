@@ -1,7 +1,14 @@
 #jinja2: lstrip_blocks: "True", trim_blocks: "True"
-{% if item.bootproto == 'static' %}
+NAME={{ item.name | default(item.device) }}
 DEVICE={{ item.device }}
-BOOTPROTO=static
+TYPE={{ item.type | default("Ethernet") }}
+ONBOOT={{ item.onboot|default("yes") }}
+
+{% if item.bootproto == 'dhcp' %}
+BOOTPROTO=dhcp
+
+{% else %}
+BOOTPROTO={{ item.bootproto|default("none") }}
     {% if item.address is defined %}
 IPADDR={{ item.address }}
     {% endif -%}
@@ -13,63 +20,20 @@ NETMASK={{ item.netmask }}
     {% if item.gateway is defined %}
 GATEWAY={{ item.gateway }}
     {% endif -%}
-
-    {% if item.vlan is defined and item.vlan | bool %}
-{% include  "ethernet_RedHat_vlan_options.j2" %}
-    {% endif -%}
-
-{% endif -%}
-
-{% if item.dns_nameservers is defined %}
-    {% for dns_nameserver in item.dns_nameservers %}
-DNS{{ loop.index }}={{ dns_nameserver }}
-    {% endfor %}
 {% endif -%}
 
 {% if item.hwaddress is defined%}
 HWADDR={{ item.hwaddress }}
 {% endif -%}
 
-{% if item.bootproto == 'dhcp' %}
-DEVICE={{ item.device }}
-BOOTPROTO=dhcp
-    {% if item.vlan is defined and item.vlan | bool %}
-{% include  "ethernet_RedHat_vlan_options.j2" %}
-    {% endif %}
+{% if item.vlan is defined and item.vlan | bool %}
+{% include "RedHat_vlan_options.j2" %}
 {% endif -%}
 
-{% if item.nm_controlled is defined %}
-NM_CONTROLLED={{ item.nm_controlled }}
+{% if item.bridge is defined %}
+BRIDGE={{ item.bridge }}
 {% endif -%}
 
-{% if item.ipv6_address is defined %}
-IPV6INIT="yes"
-IPV6_AUTOCONF="yes"
-IPV6_DEFROUTE="yes"
-IPV6_FAILURE_FATAL="no"
-IPV6_FORWARDING="yes"
-IPV6_PEERDNS="yes"
-IPV6_PEERROUTES="yes"
-IPV6_PRIVACY="no"
-IPV6ADDR={{ item.ipv6_address }}
-{% endif -%}
+{% include "RedHat_ipv6_options.j2" %}
 
-{% if item.ipv6_gateway is defined %}
-IPV6_DEFAULTGW="{{ item.ipv6_gateway }}"
-{% endif -%}
-
-{% if item.onboot is defined %}
-ONBOOT={{ item.onboot | bool | ternary("yes", "no") }}
-{% endif -%}
-
-{% if item.defroute is defined %}
-DEFROUTE={{ item.defroute | bool | ternary("yes", "no") }}
-{% endif -%}
-
-{% if item.mtu is defined %}
-MTU={{ item.mtu }}
-{% endif -%}
-
-{% if item.firewalld_zone is defined %}
-ZONE={{ item.firewalld_zone }}
-{% endif %}
+{% include "RedHat_generic_options.j2" %}

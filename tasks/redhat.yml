@@ -1,5 +1,5 @@
 ---
-- name: Install the required  packages in Redhat derivatives
+- name: Install the required packages in Redhat derivatives
   yum:
     name: "{{ item }}"
     state: installed
@@ -34,7 +34,7 @@
   with_items: "{{ network_bridge_interfaces }}"
   when: network_bridge_interfaces is defined and item.route is defined
 
-- name: Cleanup gateway dev that does not set to the one we want
+- name: Cleanup gateway dev that is not set to the one we want
   lineinfile:
     dest: /etc/sysconfig/network
     regexp: "^GATEWAYDEV=(?!{{ gateway_dev }})"
