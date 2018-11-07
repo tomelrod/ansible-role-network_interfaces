@@ -8,10 +8,6 @@ DNS{{ loop.index }}={{ dns_nameserver }}
 NM_CONTROLLED={{ item.nm_controlled | bool | ternary("yes", "no") }}
 {% endif -%}
 
-{% if item.onboot is defined %}
-ONBOOT={{ item.onboot | bool | ternary("yes", "no") }}
-{% endif -%}
-
 {% if item.defroute is defined %}
 DEFROUTE={{ item.defroute | bool | ternary("yes", "no") }}
 {% endif -%}
@@ -27,3 +23,5 @@ MTU={{ item.mtu }}
 {% if item.firewalld_zone is defined %}
 ZONE={{ item.firewalld_zone }}
 {% endif -%}
+
+ONBOOT={{ item.onboot|default("yes") }}

@@ -2,11 +2,8 @@
 NAME={{ item.name | default(item.device) }}
 DEVICE={{ item.device }}
 TYPE=Bridge
-ONBOOT={{ item.onboot|default("yes") }}
-
-{% if item.bootproto == 'dhcp' %}
+{% if item.bootproto is defined and item.bootproto == 'dhcp' %}
 BOOTPROTO=dhcp
-
 {% else %}
 BOOTPROTO={{ item.bootproto|default("none") }}
     {% if item.address is defined %}
@@ -22,6 +19,6 @@ GATEWAY={{ item.gateway }}
     {% endif -%}
 {% endif -%}
 
-{% include "RedHat_ipv6_options.j2" %}
+{% include "RedHat_ipv6_options.j2" -%}
 
 {% include "RedHat_generic_options.j2" %}

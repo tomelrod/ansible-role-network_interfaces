@@ -2,12 +2,9 @@
 NAME={{ item.name | default(item.device) }}
 DEVICE={{ item.device }}
 TYPE=Bond
-ONBOOT={{ item.onboot|default("yes") }}
 USERCTL=no
-
-{% if item.bootproto == 'dhcp' %}
+{% if item.bootproto is defined and item.bootproto == 'dhcp' %}
 BOOTPROTO=dhcp
-
 {% else %}
 BOOTPROTO={{ item.bootproto|default('none') }}
     {% if item.address is defined %}
@@ -30,6 +27,6 @@ BONDING_MASTER=yes
 BRIDGE={{ item.bridge }}
 {% endif -%}
 
-{% include "RedHat_ipv6_options.j2" %}
+{% include "RedHat_ipv6_options.j2" -%}
 
 {% include "RedHat_generic_options.j2" %}

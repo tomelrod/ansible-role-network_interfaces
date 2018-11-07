@@ -2,11 +2,8 @@
 NAME={{ item.name | default(item.device) }}
 DEVICE={{ item.device }}
 TYPE={{ item.type | default("Ethernet") }}
-ONBOOT={{ item.onboot|default("yes") }}
-
-{% if item.bootproto == 'dhcp' %}
+{% if item.bootproto is defined and item.bootproto == 'dhcp' %}
 BOOTPROTO=dhcp
-
 {% else %}
 BOOTPROTO={{ item.bootproto|default("none") }}
     {% if item.address is defined %}
@@ -22,7 +19,7 @@ GATEWAY={{ item.gateway }}
     {% endif -%}
 {% endif -%}
 
-{% if item.hwaddress is defined%}
+{% if item.hwaddress is defined %}
 HWADDR={{ item.hwaddress }}
 {% endif -%}
 
@@ -34,6 +31,11 @@ HWADDR={{ item.hwaddress }}
 BRIDGE={{ item.bridge }}
 {% endif -%}
 
-{% include "RedHat_ipv6_options.j2" %}
+{% if item.bond_master is defined %}
+MASTER={{ item.bond_master }}
+SLAVE=yes
+{% endif -%}
+
+{% include "RedHat_ipv6_options.j2" -%}
 
 {% include "RedHat_generic_options.j2" %}
