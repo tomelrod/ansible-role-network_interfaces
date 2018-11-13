@@ -31,8 +31,14 @@ HWADDR={{ item.hwaddress }}
 BRIDGE={{ item.bridge }}
 {% endif -%}
 
-{% if item.bond_master is defined %}
-MASTER={{ item.bond_master }}
+{% if item.type is defined and item.type == "Bond"  %}
+BONDING_MASTER=yes
+{% include "RedHat_bond_options.j2" %}
+
+{% endif -%}
+
+{% if item.master is defined %}
+MASTER={{ item.master }}
 SLAVE=yes
 {% endif -%}
 
