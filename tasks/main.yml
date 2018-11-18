@@ -23,8 +23,8 @@
     src: "bond_slave_{{ ansible_os_family }}.j2"
     dest: "{{ net_path }}/ifcfg-{{ item.1 }}"
   with_subelements:
-   - "{{ network_bond_interfaces }}"
-   - bond_slaves
+    - "{{ network_bond_interfaces }}"
+    - bond_slaves
   when: network_bond_interfaces is defined
   register: bond_port_result
 
@@ -33,22 +33,48 @@
     src: "bond_{{ ansible_os_family }}.j2"
     dest: "{{ net_path }}/ifcfg-{{ item.device }}"
   with_items: "{{ network_bond_interfaces }}"
-  when: network_bond_interfaces is defined
+  when: network_bond_interfaces
   register: bond_result
 
 - name: Make sure the bonding module is loaded
   modprobe:
     name: bonding
     state: present
-  when: bond_result|changed
+  when: bond_result is changed
+
+- name: Make the bonding module persistent
+  become: true
+  lineinfile:
+    line: 'bonding'
+    dest: /etc/modules
+    insertafter: EOF
+  when:
+    - network_bond_interfaces
+    - network_modprobe_persist
 
 - name: Create the network configuration file for vlan devices
   template:
     src: "ethernet_{{ ansible_os_family }}.j2"
     dest: "{{ net_path }}/ifcfg-{{ item.device }}"
   with_items: "{{ network_vlan_interfaces }}"
-  when: network_vlan_interfaces is defined
+  when: network_vlan_interfaces
   register: vlan_result
+
+- name: Make sure the 8021q module is loaded
+  modprobe:
+    name: 8021q
+    state: present
+  when: vlan_result is changed
+
+- name: Make the 8021q module persistent
+  become: true
+  lineinfile:
+    line: '8021q'
+    dest: /etc/modules
+    insertafter: EOF
+  when:
+    - network_vlan_interfaces
+    - network_modprobe_persist
 
 - name: Create the network configuration file for bridge devices
   template:
