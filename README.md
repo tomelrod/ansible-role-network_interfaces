@@ -33,7 +33,137 @@ them are as follows:
 | `network_bond_interfaces` | No | `[]` | The list of bonded interfaces to be added to the system. |
 | `network_vlan_interfaces` | No | `[]` | The list of vlan interfaces to be added to the system. |
 
-Note: The values for the list are listed in the examples below.
+
+The different types of interfaces can be configured with following variables:
+
+### Ethernet
+| Variable    | OS     | Is Required       |
+| ----------- | ------ | ----------------- |
+| device      | *      | Yes               |
+| type        | RedHat | Optional          |
+| _ADDR VARS_ | *      | -                 |
+
+### Bond
+| Variable     | OS     | Is Required       |
+| ------------ | ------ | ----------------- |
+| device       | *      | Yes               |
+| bond\_mode   | *      | Yes               |
+| bond\_slaves | Debian | Yes               |
+| bond\_slaves | RedHat | For Auto Config   |
+| type         | RedHat | For Manual Config |
+| _BOND VARS_  | *      | -                 |
+
+### Bond Slave (manual config)
+| Variable    | OS     | Is Required |
+| ----------- | ------ | ----------- |
+| device      | *      | Yes         |
+| master      | *      | Yes         |
+| type        | RedHat | Optional    |
+
+### Bridge
+| Variable      | OS     | Is Required       |
+| ------------- | ------ | ----------------- |
+| device        | *      | Yes               |
+| bridge\_ports | *      | Optional          |
+| type          | RedHat | For Manual Config |
+| ?             | Debian | For Manual Config |
+| _BRIDGE VARS_ | *      | -                 |
+
+### Bridge Port (manual config)
+| Variable    | OS     | Is Required       |
+| ----------- | ------ | ----------------- |
+| device      | *      | Yes               |
+| bridge      | RedHat | For Manual Config |
+| type        | RedHat | Optional          |
+
+### VLAN
+| Variable      | OS     | Is Required       |
+| ------------- | ------ | ----------------- |
+| device        | *      | Yes               |
+| vlan          | Redhat | For Manual Config |
+| vlan\_physdev | RedHat | Optional          |
+| vlan\_id      | RedHat | Optional          |
+| reorder\_hdr  | RedHat | Optional          |
+
+
+### _ADDR VARS_
+| Variable         | OS     |
+| ---------------- | ------ |
+| bootproto        | *      |
+| address          | *      |
+| netmask          | *      |
+| gateway          | *      |
+| cidr             | Debian |
+| network          | Debian |
+| broadcast        | Debian |
+| ipv6\_options    | Debian |
+| ipv6\_address    | *      |
+| ipv6\_gateway    | *      |
+| name             | RedHat |
+| nm\_controlled   | RedHat |
+| defroute         | RedHat |
+| stp              | RedHat |
+| mtu              | RedHat |
+| firewalld\_zone  | RedHat |
+| route            | Debian |
+| dns\_nameservers | Debian |
+| dns\_search      | Debian |
+| dns\_domain      | Debian |
+| options          | Debian |
+| hwaddress        | *      |
+
+### _BOND VARS_
+| Variable                 | OS     |
+| ------------------------ | ------ |
+| bond\_miimon             | *      |
+| bond\_lacp\_rate         | Debian |
+| bond\_xmit\_hash\_policy | *      |
+| bond\_downdelay          | *      |
+| bond\_updelay            | *      |
+| bond\_use\_carrier       | *      |
+| bond\_primary            | *      |
+| bond\_primary\_reselect  | Debian |
+| bond\_bond\_ad\_select   | Debian |
+| bond\_arp\_interval      | Debian |
+| bond\_arp\_ip\_target    | Debian |
+| bond\_arp\_validate      | Debian |
+| bond\_num\_grat\_arp     | Debian |
+| bond\_num\_unsol\_na     | Debian |
+| bond\_active\_slave      | Debian |
+| bond\_extra\_opts        | RedHat |
+
+### _BRIDGE VARS_
+| Variable           | OS     |
+| -------------------| ------ |
+| bridge\_ageing     | Debian |
+| bridge\_bridgeprio | Debian |
+| bridge\_fd         | Debian |
+| bridge\_gcint      | Debian |
+| bridge\_hello      | Debian |
+| bridge\_maxage     | Debian |
+| bridge\_maxwait    | Debian |
+| bridge\_pathcost   | Debian |
+| bridge\_portprio   | Debian |
+| bridge\_stp        | Debian |
+| bridge\_waitport   | Debian |
+
+## Combinations
+Every type of interface can be configured using `network_ether_interfaces` using the variables of the following:
+
+ethernet  \
+vlan  \
+bond  \
+bond slave  \
+bridge  \
+bridge port  \
+vlan+ethernet  \
+bond+ethernet  \
+bridge+ethernet  \
+bond+bridge port  \
+ethernet+bridge port  \
+vlan+bridge port
+
+
 
 Examples
 --------
