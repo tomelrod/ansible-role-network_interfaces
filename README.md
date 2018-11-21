@@ -107,7 +107,7 @@ Note: it is not required to add routes, default route will be added automaticall
       roles:
         - role: network
           network_bridge_interfaces:
-           -  device: br1
+            - device: br1
               type: bridge
               cidr: 192.168.10.10/24
               bridge_ports: [eth1, eth2]
@@ -177,7 +177,81 @@ address obtained via DHCP.
              cidr: 192.168.20.18/24
 ```
 
-6) All the above examples show how to configure a single host, The below
+6) It's also possible to configure all types of interfaces manually.
+```
+network_ether_interfaces:
+  - device: eth0
+    master: bond0
+  - device: eth1
+    master: bond0
+  - device: bond0
+    type: Bond
+    bond_mode: 802.3ad
+```
+
+
+
+Configure a bridge interface on a bond interface. The bond must be configured.
+```
+network_bond_interfaces:
+  - device: bond0
+    bridge: br0
+    bond_mode: 802.3ad
+    bond_miimon: 100
+    bond_slaves: [eth0, eth1]
+
+network_bridge_interfaces:
+  - device: br0
+    type: Bridge
+    address: 192.168.10.18
+    netmask: 255.255.255.0
+    gateway: 192.168.10.1
+    bridge_ports: [bond0]
+```
+The same as the above but completely manually.
+```
+network_ether_interfaces:
+  - device: eth0
+    master: bond0
+  - device: eth1
+    master: bond0
+  - device: bond0
+    type: Bond
+    bridge: br0
+    bond_mode: 802.3ad
+    bond_miimon: 100
+  - device: br0
+    type: Bridge
+    address: 192.168.10.18
+    netmask: 255.255.255.0
+    gateway: 192.168.10.1
+```
+
+
+
+Example of creating a vlan on a bond interface.
+```
+network_ether_interfaces:
+  - device: bond0.201
+    vlan: True
+    address: 192.168.100.78
+    netmask: 255.255.255.0
+    gateway: 192.168.100.1
+
+network_bond_interfaces:
+  - device: bond0
+    bond_mode: 802.3ad
+    bond_miimon: 100
+    bond_slaves: [eth0, eth1]
+```
+
+
+
+
+
+
+
+7) All the above examples show how to configure a single host, The below
 example shows how to define your network configurations for all your machines.
 
 Assume your host inventory is as follows:
@@ -221,14 +295,14 @@ Describe your network configuration for each host in host vars:
              gateway: 192.168.10.1
 ```
 
-7) If resolvconf package should be used, it is possible to add some DNS configurations
+8) If resolvconf package should be used, it is possible to add some DNS configurations
 ```
       dns-nameserver: [ "8.8.8.8", "8.8.4.4" ]
       dns-search: "search.mydomain.tdl"
       dns-domain: "mydomain.tdl"
 ```
 
-8) You can add IPv6 static IP configuration on Ethernet, Bond or Bridge interfaces
+9) You can add IPv6 static IP configuration on Ethernet, Bond or Bridge interfaces
 ```
       ipv6_address: "aaaa:bbbb:cccc:dddd:dead:beef::1/64"
       ipv6_gateway: "aaaa:bbbb:cccc:dddd::1"
@@ -243,7 +317,7 @@ and routed updated.
         - role: network
 ```
 
-9) This role can also optionally add network interfaces to firewalld zones. The
+10) This role can also optionally add network interfaces to firewalld zones. The
 core firewalld module (http://docs.ansible.com/ansible/latest/firewalld_module.html)
 can perform the same function, so if you make use of both modules then your
 playbooks may not be idempotent.  Consider this case, where only the firewalld
