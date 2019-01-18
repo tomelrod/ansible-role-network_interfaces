@@ -6,3 +6,4 @@ network_bond_interfaces: []
 network_vlan_interfaces: []
 network_check_packages: true
 network_allow_service_restart: true
+network_modprobe_persist: true

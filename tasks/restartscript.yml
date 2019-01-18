@@ -15,6 +15,7 @@
 - name: Execute Network Restart
   shell: bash /etc/network/restart.sh | true
 
-# Cleanup
 - name: Cleanup Network Restart script
-  file: path=/etc/network/restart.sh state=absent
+  file:
+    path: /etc/network/restart.sh
+    state: absent
