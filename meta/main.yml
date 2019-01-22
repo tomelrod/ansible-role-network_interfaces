@@ -3,7 +3,7 @@ galaxy_info:
   role_name: network_interface
   author: "Benno Joy, Martin Verges, Luke Short, Eric Anderson"
   company: "AnsibleWorks, First Colo GmbH"
-  license: "Simplified BSD License"
+  license: BSD-2-Clause
   min_ansible_version: 1.9
   platforms:
     - name: Debian
@@ -20,6 +20,8 @@ galaxy_info:
         - utopic
         - vivid
     - name: EL
+      versions:
+        - 7
   galaxy_tags:
     - networking
     - system
