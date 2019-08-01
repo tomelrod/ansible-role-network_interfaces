@@ -1,0 +1,41 @@
+{% if item.bridge_ports is defined %}        
+    bridge_ports           {{ item.bridge_ports|join(' ') }}
+{% else %}
+    bridge_ports           none 
+{% endif %}
+{% if item.bridge_ageing is defined %}        
+    bridge_ageing          {{ item.bridge_ageing }}
+{% endif %}
+{% if item.bridge_bridgeprio is defined %}        
+    bridge_bridgeprio      {{ item.bridge_bridgeprio }}
+{% endif %}
+{% if item.bridge_fd is defined %}        
+    bridge_fd              {{ item.bridge_fd }}
+{% endif %}
+{% if item.bridge_gcint is defined %}        
+    bridge_gcint           {{ item.bridge_gcint }}
+{% endif %}
+{% if item.bridge_hello is defined %}        
+    bridge_hello           {{ item.bridge_hello }}
+{% endif %}
+{% if item.hwaddress is defined %}
+    bridge_hw              {{ item.hwaddress }}
+{% endif %}
+{% if item.bridge_maxage is defined %}        
+    bridge_maxage          {{ item.bridge_maxage }}
+{% endif %}
+{% if item.bridge_maxwait is defined %}        
+    bridge_maxwait         {{ item.bridge_maxwait }}
+{% endif %}
+{% if item.bridge_pathcost is defined %}        
+    bridge_pathcost        {{ item.bridge_pathcost }}
+{% endif %}
+{% if item.bridge_portprio is defined %}        
+    bridge_portprio        {{ item.bridge_portprio }}
+{% endif %}
+{% if item.bridge_stp is defined %}        
+    bridge_stp             {{ item.bridge_stp }}
+{% endif %}
+{% if item.bridge_waitport is defined %}        
+    bridge_waitport       {{ item.bridge_waitport }}
+{% endif %}

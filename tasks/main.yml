@@ -10,6 +10,8 @@
   include: debian.yml
   when: ansible_os_family == "Debian"
 
+
+# Create network configuration files for any general interface
 - name: Create the network configuration file for ethernet interfaces
   template:
     src: "ethernet_{{ ansible_os_family }}.j2"
@@ -18,6 +20,8 @@
   when: network_ether_interfaces is defined
   register: ether_result
 
+
+# Create configs for bond devices and their slaves
 - name: Create the network configuration file for slave in the bond devices
   template:
     src: "bond_slave_{{ ansible_os_family }}.j2"
@@ -25,7 +29,10 @@
   with_subelements:
     - "{{ network_bond_interfaces }}"
     - bond_slaves
-  when: network_bond_interfaces is defined
+  when: network_bond_interfaces is defined and
+        not item.1 in network_ether_interfaces|map(attribute='device')|list and
+        not item.1 in network_bridge_interfaces|map(attribute='device')|list and
+        not item.1 in network_vlan_interfaces|map(attribute='device')|list
   register: bond_port_result
 
 - name: Create the network configuration file for bond devices
@@ -52,6 +59,8 @@
     - network_bond_interfaces
     - network_modprobe_persist
 
+
+# Create configs for vlans
 - name: Create the network configuration file for vlan devices
   template:
     src: "ethernet_{{ ansible_os_family }}.j2"
@@ -76,6 +85,8 @@
     - network_vlan_interfaces
     - network_modprobe_persist
 
+
+# Create configs for bridge devices and their ports
 - name: Create the network configuration file for bridge devices
   template:
     src: "bridge_{{ ansible_os_family }}.j2"
@@ -92,8 +103,12 @@
     - '{{ network_bridge_interfaces }}'
     - bridge_ports
     - skip_missing: True
-  when: network_bridge_interfaces is defined
+  when: network_bridge_interfaces is defined and
+        not item.1 in network_ether_interfaces|map(attribute='device')|list and
+        not item.1 in network_bond_interfaces|map(attribute='device')|list and
+        not item.1 in network_vlan_interfaces|map(attribute='device')|list
   register: bridge_port_result
+
 
 # Restart Network Interfaces (deconfigurate & reconfigurate interfaces)
 - include: restartscript.yml
