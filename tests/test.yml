@@ -3,7 +3,7 @@
   pre_tasks:
     - name: Ensure build dependencies are installed (RedHat).
       yum: 'name="{{ item }}" state=present'
-      with_items:
+      loop:
         - "@Development tools"
         - tar
         - unzip
@@ -13,7 +13,7 @@
 
     - name: Ensure build dependencies are installed (Debian).
       apt: 'name="{{ item }}" state=installed'
-      with_items:
+      loop:
         - build-essential
         - unzip
         - tar
