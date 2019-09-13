@@ -1,4 +1,7 @@
 BONDING_OPTS="mode={{ item.bond_mode }} miimon={{ item.bond_miimon|default(100) }}
+{%- if item.bond_mode == '802.3ad' or item.bond_mode == 4 %}
+ bond-lacp-rate={{ item.bond_lacp_rate | default('slow') }}
+{% endif %}
 {%- if item.bond_xmit_hash_policy is defined %}
  xmit_hash_policy={{ item.bond_xmit_hash_policy }}
 {%- endif -%}
