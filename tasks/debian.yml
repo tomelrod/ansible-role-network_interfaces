@@ -3,7 +3,7 @@
   apt:
     name: "{{ item }}"
     state: installed
-  with_items: "{{ network_pkgs }}"
+  loop: "{{ network_pkgs }}"
   environment: "{{ env }}"
   when: network_check_packages
 

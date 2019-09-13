@@ -14,7 +14,7 @@
   template:
     src: "ethernet_{{ ansible_os_family }}.j2"
     dest: "{{ net_path }}/ifcfg-{{ item.device }}"
-  with_items: "{{ network_ether_interfaces }}"
+  loop: "{{ network_ether_interfaces }}"
   when: network_ether_interfaces is defined
   register: ether_result
 
@@ -32,7 +32,7 @@
   template:
     src: "bond_{{ ansible_os_family }}.j2"
     dest: "{{ net_path }}/ifcfg-{{ item.device }}"
-  with_items: "{{ network_bond_interfaces }}"
+  loop: "{{ network_bond_interfaces }}"
   when: network_bond_interfaces
   register: bond_result
 
@@ -56,7 +56,7 @@
   template:
     src: "ethernet_{{ ansible_os_family }}.j2"
     dest: "{{ net_path }}/ifcfg-{{ item.device }}"
-  with_items: "{{ network_vlan_interfaces }}"
+  loop: "{{ network_vlan_interfaces }}"
   when: network_vlan_interfaces
   register: vlan_result
 
@@ -80,7 +80,7 @@
   template:
     src: "bridge_{{ ansible_os_family }}.j2"
     dest: "{{ net_path }}/ifcfg-{{ item.device }}"
-  with_items: "{{ network_bridge_interfaces }}"
+  loop: "{{ network_bridge_interfaces }}"
   when: network_bridge_interfaces is defined
   register: bridge_result
 
