@@ -1,4 +1,5 @@
 #jinja2: lstrip_blocks: "True", trim_blocks: "True"
+# {{ ansible_managed }}
 {% for i in item.route %}
     {% if i is mapping %}
 ADDRESS{{ loop.index - 1 }}={{ i.network }}

@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 
 auto {{ item.device }}
 iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto }}{% elif item.cidr is defined or item.address is defined %}static{% else %}dhcp{% endif %}
@@ -6,7 +7,7 @@ iface {{ item.device }} inet {% if item.bootproto is defined %}{{ item.bootproto
 {% include 'Debian_resolvconf.j2' %}
 {% include 'route_Debian.j2' %}
 
-{% if item.bond_mode is defined and item.bond_slaves is defined %}
+{% if item.bond_mode is defined %}
 {% include 'Debian_bond_options.j2' %}
 {% endif %}
 
