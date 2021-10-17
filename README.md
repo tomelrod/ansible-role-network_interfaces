@@ -16,8 +16,7 @@ machines. The role can be used to configure:
 
 ## Requirements
 
-
-This role requires Ansible 2.0 or higher, and platform requirements are listed in the metadata file.
+This role requires Ansible 2.5 or higher, and platform requirements are listed in the metadata file.
 
 ## Role Variables
 
@@ -34,74 +33,75 @@ them are as follows:
 | `network_vlan_interfaces` | No | `[]` | The list of vlan interfaces to be added to the system. |
 | `network_check_packages` | No | `true` | Install packages listed in network_pkgs. |
 | `network_allow_service_restart` | No | `true` | Whether interfaces/networking should get reconfigured and restarted. |
-| `network_modprobe_persist` | No | `true` | Persisting module loading. |
+| `network_modprobe_persist` | No | `true` | Persistent module loading. |
 | `network_configured_interfaces_only` | No | `false` | Removes interfaces not configured over this role entirely when enabled. |
 | `network_interface_file_prefix` | No | `ifcfg-` | The prefix for interface configuration files. |
-| `network_interface_file_postfix` | No | `` | The postfix for interface configuration files. |
+| `network_interface_file_postfix` | No | `None` | The postfix for interface configuration files. |
 
 
-## Variables Defining Interfaces
-The different types of interfaces can be configured with following variables.(manual config currently only availible for RedHat)
+## Defining Interfaces
+The different types of interfaces can be configured with the following variables.(manual config currently only available for RedHat)
+
+Each of the `network_*_interfaces`role variables is a list of dictionaries describing the interface. These dictionaries are built out of the variables described in this section.
 
 #### Ethernet
 _for use with `network_ether_interfaces`_
 
-| Variable    | OS     | Is Required       |
-| ----------- | ------ | ----------------- |
-| device      | *      | Yes               |
-| type        | RedHat | Optional          |
-| [_ADDR VARS_](#addr-vars) | *      | -                 |
+| Variable    | OS     | Required       | Comments               |
+| ----------- | ------ | -------------- |----------------------- |
+| device      | *      | Yes            | Network interface name |
+| type        | RedHat | Optional       | Config option `TYPE`   |
+| [_ADDR VARS_](#addr-vars) | * | -     |
 
 #### Bond
 _for use with `network_bond_interfaces`_
 
-| Variable     | OS     | Is Required       |
-| ------------ | ------ | ----------------- |
-| device       | *      | Yes               |
-| bond\_mode   | *      | Yes               |
-| bond\_slaves | Debian | Yes               |
-| bond\_slaves | RedHat | For Auto Config   |
-| type         | RedHat | For Manual Config |
-| [_BOND VARS_](#addr-vars) | *      | -                 |
-| [_ADDR VARS_](#addr-vars) | *      | -                 |
+| Variable     | OS     | Required          | Comments                     |
+| ------------ | ------ | ----------------- | ---------------------------- |
+| device       | *      | Yes               | Network interface name       |
+| bond\_mode   | *      | Yes               | Desired bonding mode         |
+| bond\_slaves | Debian | Yes               | List of the slave interfaces |
+| bond\_slaves | RedHat | For Auto Config   | List of the slave interfaces |
+| type         | RedHat | For Manual Config | Config option `TYPE`         |
+| [_BOND VARS_](#bond-vars) | * | -         |
+| [_ADDR VARS_](#addr-vars) | * | -         |
 
 #### Bond Slave (manual config)
-| Variable    | OS     | Is Required |
-| ----------- | ------ | ----------- |
-| device      | *      | Yes         |
-| master      | *      | Yes         |
-| type        | RedHat | Optional    |
+| Variable    | OS     | Required | Comments               |
+| ----------- | ------ | -------- | ---------------------- |
+| device      | *      | Yes      | Network interface name |
+| master      | *      | Yes      | The bond interface     |
+| type        | RedHat | Optional | Config option `TYPE`   |
 
 #### Bridge
 _for use with `network_bridge_interfaces`_
 
-| Variable      | OS     | Is Required       |
-| ------------- | ------ | ----------------- |
-| device        | *      | Yes               |
-| bridge\_ports | *      | Optional          |
-| type          | RedHat | For Manual Config |
-| ?             | Debian | For Manual Config |
-| [_BRIDGE VARS_](#addr-vars) | *      | -                 |
-| [_ADDR VARS_](#addr-vars) | *      | -                 |
+| Variable      | OS     | Required          | Comments                                  |
+| ------------- | ------ | ----------------- | ----------------------------------------- |
+| device        | *      | Yes               | Network interface name                    |
+| bridge\_ports | *      | Optional          | List of interfaces attached to the bridge |
+| type          | RedHat | For Manual Config | Config option `TYPE`                      |
+| [_BRIDGE VARS_](#bridge-vars) | * | -      |
+| [_ADDR VARS_](#addr-vars) | * | -          |
 
 #### Bridge Port (manual config)
-| Variable    | OS     | Is Required       |
-| ----------- | ------ | ----------------- |
-| device      | *      | Yes               |
-| bridge      | RedHat | For Manual Config |
-| type        | RedHat | Optional          |
+| Variable    | OS     | Required          | Comments               |
+| ----------- | ------ | ----------------- | ---------------------- |
+| device      | *      | Yes               | Network interface name |
+| bridge      | RedHat | For Manual Config | The bridge interface   |
+| type        | RedHat | Optional          | Config option `TYPE`   |
 
 #### VLAN
 _for use with `network_vlan_interfaces`_
 
-| Variable      | OS     | Is Required       |
-| ------------- | ------ | ----------------- |
-| device        | *      | Yes               |
-| vlan          | Redhat | For Manual Config |
-| vlan\_physdev | RedHat | Optional          |
-| vlan\_id      | RedHat | Optional          |
-| reorder\_hdr  | RedHat | Optional          |
-| [_ADDR VARS_](#addr-vars) | *       | -                 |
+| Variable      | OS     | Required | Comments               |
+| ------------- | ------ | -------- | ---------------------- |
+| device        | *      | Yes      | Network interface name |
+| vlan          | Redhat | Yes      | boolean, set `True`    |
+| vlan\_physdev | RedHat | Optional | Device VLAN resides on, default value is extraced from device name |
+| vlan\_id      | RedHat | Optional | VLAN ID, default value is extraced from device name |
+| reorder\_hdr  | RedHat | Optional |
+| [_ADDR VARS_](#addr-vars) | * | - |
 
 
 #### _ADDR VARS_
@@ -167,17 +167,17 @@ _for use with `network_vlan_interfaces`_
 
 ## Combinations (RedHat Only)
 (Currently only possible on RedHat systems)
-Every type of interface can be configured using `network_ether_interfaces` by using the variables of the other interfaces types with it. There are some interfaces that can only be configured using a combination of the interface variables. Here is a list of the different interfaces and combinations thereof avalible to be configured using `network_ether_interfaces`:
+Every type of interface can be configured using `network_ether_interfaces` by using the variables of the other interfaces types. There are some interfaces that can only be configured using a combination of the interface variables. Here is a list of the different interfaces and combinations thereof available to be configured using `network_ether_interfaces`:
 
 - [ethernet](#ethernet)
 - [vlan](#vlan)
 - [bond](#bond)
-- [bond slave](#bond-slave--manual-config)
+- [bond slave](#bond-slave-manual-config)
 - [bond](#bond)+[vlan](#vlan) (VLAN on a Bond interface)
 - [bridge](#bridge)
-- [bridge port](#bridge-port--manual-config)
-- [bond](#bond)+[bridge port](#bridge-port--manual-config) (Bond interface used as a bridge port. Exclude [_ADDR VARS_](#addr-vars))
-- [vlan](#vlan)+[bridge port](#bridge-port--manual-config) (VLAN interface used as a bridge port. Exclude [_ADDR VARS_](#addr-vars))
+- [bridge port](#bridge-port-manual-config)
+- [bond](#bond)+[bridge port](#bridge-port-manual-config) (Bond interface used as a bridge port. Exclude [_ADDR VARS_](#addr-vars))
+- [vlan](#vlan)+[bridge port](#bridge-port-manual-config) (VLAN interface used as a bridge port. Exclude [_ADDR VARS_](#addr-vars))
 
 
 
@@ -204,7 +204,7 @@ If you want to use a different MAC Address for your Interface, you can simply ad
 ```
       hwaddress: aa:bb:cc:dd:ee:ff
 ```
-On some rare occasion it might be good to set whatever option you like. Therefore it
+On some rare occasion it might be good to set whatever options you like. Therefore(Debian systems only) it
 is possible to use
 ```
       options:
@@ -436,7 +436,7 @@ ipv6_gateway: "aaaa:bbbb:cccc:dddd::1"
 
 Create a playbook which applies this role to all hosts as shown below, and run
 the playbook. All the servers should have their network interfaces configured
-and routed updated.
+and routes updated.
 
 ```
 - hosts: all
@@ -471,8 +471,8 @@ the eth0 interface to the public firewalld zone:
 Note: Ansible needs network connectivity throughout the playbook process, you
 may need to have a control interface that you do *not* modify using this
 method while changing IP Addresses so that Ansible has a stable connection
-to configure the target systems. All network changes are done within a single
-generated script and network connectivity is only lost for few seconds.
+to configure the target systems. All network changes are activated within a single
+generated script and network connectivity is only lost for a few seconds.
 
 
 ## Dependencies
