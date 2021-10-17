@@ -1,7 +1,7 @@
 #jinja2: lstrip_blocks: "True", trim_blocks: "True"
+# {{ ansible_managed }}
 NAME={{ item.name | default(item.device) }}
 DEVICE={{ item.device }}
-TYPE={{ item.type | default("Ethernet") }}
 {% if item.bootproto is defined and item.bootproto == 'dhcp' %}
 BOOTPROTO=dhcp
 {% else %}
@@ -24,7 +24,10 @@ HWADDR={{ item.hwaddress }}
 {% endif -%}
 
 {% if item.vlan is defined and item.vlan | bool %}
+TYPE=Vlan
 {% include "RedHat_vlan_options.j2" %}
+{% else %}
+TYPE={{ item.type | default("Ethernet") }}
 {% endif -%}
 
 {% if item.bridge is defined %}
